@@ -18,10 +18,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rikezero.dektek.ui.foundation.theme.DekTekTheme
+import com.rikezero.dektek.util.makeItBold
 
 @Composable
 fun TitleHeader(
@@ -77,7 +77,7 @@ private fun TopAppBarContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProvideTextStyle(
-                value = DekTekTheme.typography.h3.copy(fontWeight = FontWeight.Bold)
+                value = DekTekTheme.typography.h3.makeItBold()
             ) {
                 title()
             }

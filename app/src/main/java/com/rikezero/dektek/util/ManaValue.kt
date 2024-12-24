@@ -3,7 +3,7 @@ package com.rikezero.dektek.util
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import com.rikezero.dektek.R.drawable.*
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 enum class ManaValue(@DrawableRes val drawable: Int): Parcelable {

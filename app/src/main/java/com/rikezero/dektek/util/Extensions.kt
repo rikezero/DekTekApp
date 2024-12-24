@@ -1,5 +1,11 @@
 package com.rikezero.dektek.util
 
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import com.rikezero.dektek.R
+
 /**
  * Extracts all substrings enclosed by curly braces `{}` from the current [String].
  *
@@ -56,3 +62,10 @@ fun String.getManaSymbols(): MutableList<ManaValue> {
     }
     return manaSymbols
 }
+
+fun TextStyle.makeItBold() = this.copy(
+    fontFamily = FontFamily(
+        Font(R.font.montserrat_bold)
+    ),
+    fontWeight = FontWeight.Bold
+)

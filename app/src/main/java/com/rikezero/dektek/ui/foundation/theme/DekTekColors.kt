@@ -56,6 +56,7 @@ class DekTekColors(
     celestialBlue300: Color,
     celestialBlue200: Color,
     celestialBlue100: Color,
+    themeAwareTextColor: Color,
     isDark: Boolean
 ) {
     // Core Colors
@@ -148,6 +149,10 @@ class DekTekColors(
     var white by mutableStateOf(white)
         private set
 
+    // Text
+    var themeAwareTextColor by mutableStateOf(themeAwareTextColor)
+        private set
+
     // Opacity
     var darkOpacity500 by mutableStateOf(darkOpacity500)
         private set
@@ -224,6 +229,7 @@ class DekTekColors(
             celestialBlue300: Color = CelestialBlue300,
             celestialBlue200: Color = CelestialBlue200,
             celestialBlue100: Color = CelestialBlue100,
+            themeAwareTextColor: Color = Black
         ): DekTekColors = DekTekColors(
             primary = primary,
             secondary = secondary,
@@ -272,6 +278,7 @@ class DekTekColors(
             celestialBlue300 = celestialBlue300,
             celestialBlue200 = celestialBlue200,
             celestialBlue100 = celestialBlue100,
+            themeAwareTextColor = themeAwareTextColor,
             isDark = false
         )
 
@@ -323,6 +330,7 @@ class DekTekColors(
             celestialBlue300: Color = CelestialBlue300,
             celestialBlue200: Color = CelestialBlue200,
             celestialBlue100: Color = CelestialBlue100,
+            themeAwareTextColor: Color = White
         ): DekTekColors = DekTekColors(
             primary = primary,
             secondary = secondary,
@@ -371,6 +379,7 @@ class DekTekColors(
             celestialBlue300 = celestialBlue300,
             celestialBlue200 = celestialBlue200,
             celestialBlue100 = celestialBlue100,
+            themeAwareTextColor = themeAwareTextColor,
             isDark = true
         )
     }
