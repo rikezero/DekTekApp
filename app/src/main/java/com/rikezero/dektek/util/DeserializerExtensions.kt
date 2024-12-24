@@ -6,7 +6,7 @@ inline fun <reified T> String.toDeserializedClass(): T? {
     val gson = Gson()
     return try {
         gson.fromJson(this, T::class.java)
-    } catch (e: Exception){
+    } catch (e: Exception) {
         null
     }
 }
