@@ -1,4 +1,4 @@
-package com.rikezero.dektek.ui.components.cards
+package com.rikezero.dektek.ui.foundation.components.cards
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
