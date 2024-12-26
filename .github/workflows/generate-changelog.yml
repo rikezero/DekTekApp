@@ -101,6 +101,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: github_changelog_generator --user rikezero --project DekTekApp -t $GITHUB_TOKEN
 
+      - name: Switch to SSH Remote
+        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
+
       - name: Commit and Push Changelog
         run: |
           git config user.name "GitHub Actions Bot"
