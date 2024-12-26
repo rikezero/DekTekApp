@@ -37,11 +37,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Check and Create Tag
         env:
           APP_VERSION: ${{ needs.setup.outputs.app_version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Set remote URL to use SSH
+          git remote set-url origin git@github.com:your-username/your-repo.git
+          
           # Fetch existing tags
           git fetch --tags
           
@@ -62,6 +71,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
