@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'CHANGELOG.md'  # Prevent workflow from triggering on changelog updates
   workflow_dispatch:
 
 jobs:
@@ -100,6 +102,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: github_changelog_generator --user rikezero --project DekTekApp -t $GITHUB_TOKEN
+
+      - name: Check for CHANGELOG.md Changes
+        id: changelog_changes
+        run: |
+          git fetch origin master
+          git diff --quiet origin/master -- CHANGELOG.md
+          echo "::set-output name=changed::$?"
 
       - name: Switch to SSH Remote
         run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
