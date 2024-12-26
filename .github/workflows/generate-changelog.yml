@@ -8,6 +8,9 @@ on:
       - 'CHANGELOG.md'  # Prevent workflow from triggering on changelog updates
   workflow_dispatch:
 
+permissions:
+  contents: write  # Ensure the GITHUB_TOKEN has write permissions
+
 jobs:
   # 1) Setup job: Extracts the app version from build.gradle or build.gradle.kts
   setup:
@@ -17,10 +20,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history for accurate tag checking
 
       - name: Extract App Version
         id: get-version
         run: |
+          # Extract versionName from build.gradle or build.gradle.kts
           if [ -f app/build.gradle ]; then
             APP_VERSION=$(grep -oP 'versionName\s*"\K[0-9.]+(?=")' app/build.gradle)
           elif [ -f app/build.gradle.kts ]; then
@@ -36,7 +42,7 @@ jobs:
           fi
 
           echo "App version: $APP_VERSION"
-          echo "::set-output name=app_version::$APP_VERSION"
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT  # Updated syntax
 
   # 2) Tagging job: Creates a Git tag for the extracted version if it doesn't exist
   tagging:
@@ -45,6 +51,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history for accurate tag checking
 
       - name: Set up SSH
         run: |
@@ -57,6 +65,7 @@ jobs:
         env:
           APP_VERSION: ${{ needs.setup.outputs.app_version }}
         run: |
+          # Set remote URL to use SSH
           git remote set-url origin git@github.com:rikezero/DekTekApp.git
           
           # Fetch existing tags
@@ -80,6 +89,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history for accurate changelog generation
 
       - name: Set up SSH
         run: |
@@ -101,22 +112,29 @@ jobs:
       - name: Generate CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: github_changelog_generator --user rikezero --project DekTekApp -t $GITHUB_TOKEN
+        run: |
+          github_changelog_generator --user rikezero --project DekTekApp -t $GITHUB_TOKEN
 
       - name: Check for CHANGELOG.md Changes
         id: changelog_changes
         run: |
+          # Fetch the latest master to compare
           git fetch origin master
-          git diff --quiet origin/master -- CHANGELOG.md
-          echo "::set-output name=changed::$?"
 
-      - name: Switch to SSH Remote
-        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
+          # Check if CHANGELOG.md has changes compared to origin/master
+          if git diff --quiet origin/master -- CHANGELOG.md; then
+            echo "No changes detected in CHANGELOG.md."
+            echo "changed=0" >> $GITHUB_OUTPUT  # Updated syntax
+          else
+            echo "Changes detected in CHANGELOG.md."
+            echo "changed=1" >> $GITHUB_OUTPUT  # Updated syntax
+          fi
 
       - name: Commit and Push Changelog
+        if: steps.changelog_changes.outputs.changed == '1'
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add CHANGELOG.md
           git commit -m "chore: Update CHANGELOG.md"
-          git push
+          git push origin master
