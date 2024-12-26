@@ -24,8 +24,8 @@ jobs:
 
       - name: Generate CHANGELOG.md
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for API access
-        run: github_changelog_generator --user your-username --project your-repo-name
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: github_changelog_generator --user my-username --project my-repo -t $GITHUB_TOKEN
 
       - name: Commit and push changes
         run: |
