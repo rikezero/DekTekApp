@@ -1,0 +1,75 @@
+name: Convert SVG to Android XML
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+  # Scheduled trigger on the 1st and 16th of every month.
+  schedule:
+    - cron: '0 0 1,16 * *'
+
+jobs:
+  # 1) Setup environment & download svg2android JAR
+  setup-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Download svg2android JAR
+        run: |
+          curl -L \
+            https://github.com/inloop/svg2android/releases/download/1.0.0/svg2android-1.0.0-jar-with-dependencies.jar \
+            -o svg2android.jar
+
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: svg2android-jar
+          path: svg2android.jar
+
+  # 2) Clone mtg-vectors & convert all SVGs with a prefix
+  convert-svgs:
+    runs-on: ubuntu-latest
+    needs: [setup-environment]
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: svg2android-jar
+
+      - name: Clone mtg-vectors repository
+        run: git clone https://github.com/Investigamer/mtg-vectors.git
+
+      - name: Convert and Rename SVGs
+        run: |
+          # Define paths
+          INPUT_DIR="mtg-vectors/svg/optimized/set"
+          OUTPUT_DIR="converted"
+
+          # Create output directory
+          mkdir -p $OUTPUT_DIR
+
+          # Loop through all SVG files and convert them
+          find $INPUT_DIR -type f -name "*.svg" | while read -r SVG_FILE; do
+            # Extract the base filename without extension, convert to lowercase
+            BASE_NAME=$(basename "$SVG_FILE" .svg | tr '[:upper:]' '[:lower:]')
+
+            # Define the new filename with the prefix
+            OUTPUT_FILE="${OUTPUT_DIR}/ic_set_${BASE_NAME}.xml"
+
+            # Run the conversion
+            java -jar svg2android.jar --input "$SVG_FILE" --output "$OUTPUT_FILE"
+          done
+
+      # Optionally, upload the converted files as artifacts
+      - name: Upload converted vectors
+        uses: actions/upload-artifact@v3
+        with:
+          name: converted-vectors
+          path: converted
