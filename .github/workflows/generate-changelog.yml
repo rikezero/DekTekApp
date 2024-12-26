@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  # 1) Setup job: Extracts the app version from build.gradle or build.gradle.kts
   setup:
     runs-on: ubuntu-latest
     outputs:
@@ -18,7 +19,6 @@ jobs:
       - name: Extract App Version
         id: get-version
         run: |
-          # Extract versionName from build.gradle or build.gradle.kts
           if [ -f app/build.gradle ]; then
             APP_VERSION=$(grep -oP 'versionName\s*"\K[0-9.]+(?=")' app/build.gradle)
           elif [ -f app/build.gradle.kts ]; then
@@ -27,13 +27,16 @@ jobs:
             echo "No build.gradle or build.gradle.kts file found!"
             exit 1
           fi
+
           if [ -z "$APP_VERSION" ]; then
             echo "Could not extract versionName. Ensure it is defined in build.gradle or build.gradle.kts."
             exit 1
           fi
+
           echo "App version: $APP_VERSION"
           echo "::set-output name=app_version::$APP_VERSION"
 
+  # 2) Tagging job: Creates a Git tag for the extracted version if it doesn't exist
   tagging:
     runs-on: ubuntu-latest
     needs: setup
@@ -48,20 +51,16 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
-      - name: Debug SSH Connection
-        run: ssh -vT git@github.com
-
       - name: Check and Create Tag
         env:
           APP_VERSION: ${{ needs.setup.outputs.app_version }}
         run: |
-          # Set remote URL to use SSH
           git remote set-url origin git@github.com:rikezero/DekTekApp.git
           
           # Fetch existing tags
           git fetch --tags
           
-          # Check if tag exists
+          # Check if the tag already exists
           if git rev-parse "v$APP_VERSION" >/dev/null 2>&1; then
             echo "Tag v$APP_VERSION already exists. Exiting."
             exit 0
@@ -72,6 +71,7 @@ jobs:
           git tag "v$APP_VERSION"
           git push origin "v$APP_VERSION"
 
+  # 3) Changelog job: Uses github-changelog-generator to update CHANGELOG.md
   changelog:
     runs-on: ubuntu-latest
     needs: tagging
@@ -85,9 +85,6 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-
-      - name: Debug SSH Connection
-        run: ssh -vT git@github.com
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
