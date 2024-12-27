@@ -15,14 +15,11 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "commit-msg": "commitlint --edit $1"
+      "commit-msg": "commitlint --edit $1 --config commitlint.config.js"
     }
   },
   "lint-staged": {
     "*.js": ["eslint --fix", "git add"]
-  },
-  "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
   },
   "author": "Rikezero <rikezero@gmail.com>",
   "license": "GPL-3.0",

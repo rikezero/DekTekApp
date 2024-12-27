@@ -22,5 +22,5 @@ module.exports = {
     'subject-empty': [2, 'never'], // Subject must not be empty
     'subject-full-stop': [2, 'never', '.'], // No full stop at the end of the subject
     'header-max-length': [2, 'always', 72], // Max header length is 72 characters
-  },
+  }
 };

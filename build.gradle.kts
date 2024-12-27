@@ -1,4 +1,4 @@
-import com.github.gradle.node.npm.task.NpmTask
+import com.github.gradle.node.task.NodeTask
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
@@ -21,24 +21,24 @@ node {
     distBaseUrl = null
 }
 
-tasks.register<NpmTask>("huskyInstall") {
-    description = "Installs Husky Git hooks"
+tasks.register<NodeTask>("setupHusky") {
+    description = "Sets up Husky and Commitlint hooks"
     group = "build setup"
-    dependsOn("npmInstall")
-    workingDir.set(project.rootDir)
-    args.set(listOf("run", "prepare"))
-}
+    dependsOn("npmInstall") // Ensure npm dependencies are installed
 
-tasks.register("setHuskyHookPermissions") {
-    doLast {
-        val commitMsgHook = file(".husky/commit-msg")
-        if (commitMsgHook.exists()) {
-            commitMsgHook.setExecutable(true)
-            println("Set executable permissions for .husky/commit-msg")
-        }
+    // Use nodeProjectDir to define the Node.js context
+    val nodeDir = node.nodeProjectDir.get().asFile
+    val nodeExecutable = project.layout.buildDirectory.asFile.get().resolve("nodejs")
+        .resolve("node-v18.17.1-win-x64") // Update with your Node.js version
+        .resolve("node.exe")
+        .absolutePath
+
+    script.set(file("husky_install.js")) // Path to the Husky setup script
+    args.addAll("--node-path", nodeExecutable) // Pass the resolved Node.js path to the script
+
+    doFirst {
+        println("Using Node.js project directory: $nodeDir")
+        println("Using Node.js executable: $nodeExecutable")
     }
 }
 
-tasks.named("huskyInstall") {
-    finalizedBy("setHuskyHookPermissions")
-}
