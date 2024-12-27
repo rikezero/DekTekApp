@@ -3,46 +3,77 @@ name: Automatic Versioning
 on:
   push:
     branches:
-      - master
+      - main
       - dev
       - 'feature/**'
       - 'fix/**'
       - 'hotfix/**'
 
+permissions:
+  actions: write  # Grants write permissions to the actions scope, including variables
+
 jobs:
-  versioning:
-    name: Calculate Version with GitVersion
+  update-version:
+    name: Calculate and Update VERSION_NAME
     runs-on: ubuntu-latest
-    outputs:
-      VERSION_NAME: ${{ steps.set_version.outputs.VERSION_NAME }}
     steps:
+      # Step 1: Checkout Repository with Full History
       - name: Checkout Repository
         uses: actions/checkout@v3
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0.x' # Specify the .NET version compatible with GitVersion
+          fetch-depth: 0  # Necessary for GitVersion to access full history
 
-      - name: Install GitVersion Global Tool
-        run: |
-          dotnet tool install --global GitVersion.Tool --version 6.1.0
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
-      - name: Run GitVersion
+      # Step 2: Setup GitVersion using the Official GitVersion GitHub Action
+      - name: Setup GitVersion
+        uses: GitTools/actions/gitversion/execute@v0.9.10
         id: gitversion
-        run: gitversion /output json > gitversion_output.json
+        with:
+          useConfigFile: true
+          configFilePath: GitVersion.yml  # Ensure this file exists in your repo
+
+      # Step 3: Extract Version Information and Set Environment Variables
+      - name: Set Version Variables
+        run: |
+          VERSION_NAME="${{ steps.gitversion.outputs.SemVer }}"
+          MAJOR="${{ steps.gitversion.outputs.Major }}"
+          MINOR="${{ steps.gitversion.outputs.Minor }}"
+          PATCH="${{ steps.gitversion.outputs.Patch }}"
+          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
+          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
+          echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_ENV
         shell: bash
 
-      - name: Set Version Outputs
-        id: set_version
+      # Step 4: Update VERSION_NAME Repository Variable via GitHub API
+      - name: Update VERSION_NAME Variable
         run: |
-          VERSION_NAME=$(jq -r .SemVer gitversion_output.json)
-          MAJOR=$(jq -r .Major gitversion_output.json)
-          MINOR=$(jq -r .Minor gitversion_output.json)
-          PATCH=$(jq -r .Patch gitversion_output.json)
-          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
-          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
-          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
-          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_OUTPUT
-          echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_OUTPUT
+          API_URL="https://api.github.com/repos/${{ github.repository }}/actions/variables/VERSION_NAME"
+          NEW_VERSION="${VERSION_NAME}"
+          
+          # Update the repository variable VERSION_NAME with the new version
+          curl -s -X PATCH "$API_URL" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -d "{\"value\": \"${NEW_VERSION}\"}"
+          
+          echo "VERSION_NAME updated to ${NEW_VERSION}"
+        shell: bash
+
+      # Optional Step 5: Create a Git Tag for the New Version
+      - name: Create Git Tag
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+        run: |
+          git tag -a "v${VERSION_NAME}" -m "Release version ${VERSION_NAME}"
+          git push origin "v${VERSION_NAME}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Optional Step 6: Create GitHub Release
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${VERSION_NAME}"
+          release_name: "Release v${VERSION_NAME}"
+          body: "Automated release for version v${VERSION_NAME}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
