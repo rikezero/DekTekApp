@@ -20,7 +20,7 @@ jobs:
     steps:
       # Step 1: Checkout Repository with Full History
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Necessary for GitVersion to access full history
 
@@ -37,14 +37,20 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 4: Use Git Version Action to Calculate Version
-      - name: GitVersion
-        id: gitversion
-        uses: mermez/git-version-action@v1
+      # Step 4: Setup GitVersion
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.1
         with:
+          versionSpec: '6.0.x'
           configFilePath: GitVersion.yml
 
-      # Step 5: Set Version Variables from GitVersion Outputs
+      # Step 5: Determine version
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v3.1.1
+        with:
+          useConfigFile: true
+
+      # Step 6: Set Version Variables from GitVersion Outputs
       - name: Set Version Variables
         run: |
           echo "VERSION_NAME=${{ steps.gitversion.outputs.SemVer }}" >> $GITHUB_ENV
@@ -54,28 +60,28 @@ jobs:
           echo "VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))" >> $GITHUB_ENV
         shell: bash
 
-      # Step 6: Update VERSION_NAME Repository Variable via GitHub API
+      # Step 7: Update VERSION_NAME Repository Variable via GitHub API
       - name: Update VERSION_NAME Variable
         run: |
           # Install jq if not already available
           sudo apt-get update && sudo apt-get install -y jq
-
+          
           API_URL="https://api.github.com/repos/${{ github.repository }}/actions/variables/VERSION_NAME"
           NEW_VERSION="${VERSION_NAME}"
-
+          
           # Fetch the current variable ID
           VARIABLE_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/variables" | \
             jq -r --arg name "VERSION_NAME" '.variables[] | select(.name==$name) | .id')
-
+          
           if [ -z "$VARIABLE_ID" ]; then
             echo "VERSION_NAME variable not found. Creating it."
             CREATE_RESPONSE=$(curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/actions/variables" \
               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github+json" \
               -d "{\"name\": \"VERSION_NAME\", \"value\": \"${NEW_VERSION}\"}")
-
+          
             UPDATED_VALUE=$(echo "$CREATE_RESPONSE" | jq -r '.value')
             if [ "$UPDATED_VALUE" == "$NEW_VERSION" ]; then
               echo "VERSION_NAME successfully created with value ${NEW_VERSION}"
@@ -90,7 +96,7 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github+json" \
               -d "{\"value\": \"${NEW_VERSION}\"}")
-
+          
             # Validate the response
             UPDATED_VALUE=$(echo "$RESPONSE" | jq -r '.value')
             if [ "$UPDATED_VALUE" == "$NEW_VERSION" ]; then
@@ -102,23 +108,3 @@ jobs:
             fi
           fi
         shell: bash
-
-      # Optional Step 7: Create a Git Tag for the New Version
-      - name: Create Git Tag
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-        run: |
-          git tag -a "v${VERSION_NAME}" -m "Release version ${VERSION_NAME}"
-          git push origin "v${VERSION_NAME}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Optional Step 8: Create GitHub Release
-      - name: Create GitHub Release
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: "v${VERSION_NAME}"
-          release_name: "Release v${VERSION_NAME}"
-          body: "Automated release for version v${VERSION_NAME}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
