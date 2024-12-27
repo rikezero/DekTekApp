@@ -3,7 +3,7 @@ name: Automatic Versioning
 on:
   push:
     branches:
-      - main
+      - master
       - dev
       - 'feature/**'
       - 'fix/**'
