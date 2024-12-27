@@ -37,13 +37,12 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 4: Use GitVersion Action to Calculate Version
+      # Step 4: Use Git Version Action to Calculate Version
       - name: GitVersion
-        uses: GitTools/actions/gitversion-action@v0.10.0  # Ensure you're using the latest stable version
         id: gitversion
+        uses: mermez/git-version-action@v1
         with:
-          configFilePath: GitVersion.yml  # Ensure this file exists in your repo
-          updateAssemblyInfo: false
+          configFilePath: GitVersion.yml
 
       # Step 5: Set Version Variables from GitVersion Outputs
       - name: Set Version Variables
