@@ -1,0 +1,65 @@
+mode: ContinuousDeployment
+
+branches:
+  master:
+    regex: ^master$
+    increment: Patch
+    tag: ''
+    tracks-release-branches: true
+    prevent-increment-of-merged-branch-version: true
+    is-release-branch: true
+    commit-message-incrementing: Enabled
+
+  dev:
+    regex: ^dev$
+    increment: Minor
+    tag: alpha
+    commit-message-incrementing: Enabled
+
+  feat:
+    regex: ^feat[/-]
+    increment: Minor
+    tag: feat
+    commit-message-incrementing: Enabled
+
+  fix:
+    regex: ^fix[/-]
+    increment: Patch
+    tag: fix
+    commit-message-incrementing: Enabled
+
+  hotfix:
+    regex: ^hotfix[/-]
+    increment: Patch
+    tag: hotfix
+    commit-message-incrementing: Enabled
+
+ignore:
+  sha: []
+
+commit-message-incrementing: Enabled
+
+# Define how commit messages influence version increments
+commit-message-strategy:
+  modes:
+    - SemanticVersioning
+  commit-message-criteria:
+    - type: feat
+      increment: Minor
+    - type: refactor
+      increment: Minor
+    - type: fix
+      increment: Patch
+    - type: chore
+      increment: Patch
+    - type: docs
+      increment: Patch
+    - type: style
+      increment: Patch
+    - type: test
+      increment: Patch
+    - type: hotfix
+      increment: Patch
+    - type: BREAKING CHANGE
+      increment: Major
+

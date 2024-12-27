@@ -1,11 +1,18 @@
+# .github/workflows/generate_changelog.yml
+
 name: Generate Changelog and Tag Release
 
 on:
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - 'CHANGELOG.md'  # Prevent workflow from triggering on changelog updates
+#  push:
+#    branches:
+#      - master
+#    paths-ignore:
+#      - 'CHANGELOG.md'  # Prevent workflow from triggering on changelog updates
+  workflow_run:
+    workflows: [ "Automatic Versioning" ]
+    types:
+      - completed
+
   workflow_dispatch:
 
 permissions:
@@ -61,22 +68,22 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
+      - name: Set Remote to SSH
+        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
+
       - name: Check and Create Tag
         env:
           APP_VERSION: ${{ needs.setup.outputs.app_version }}
         run: |
-          # Set remote URL to use SSH
-          git remote set-url origin git@github.com:rikezero/DekTekApp.git
-          
           # Fetch existing tags
           git fetch --tags
-          
+
           # Check if the tag already exists
           if git rev-parse "v$APP_VERSION" >/dev/null 2>&1; then
             echo "Tag v$APP_VERSION already exists. Exiting."
             exit 0
           fi
-          
+
           # Create and push the new tag
           echo "Creating and pushing tag v$APP_VERSION"
           git tag "v$APP_VERSION"
@@ -99,6 +106,9 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
+      - name: Set Remote to SSH
+        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -113,7 +123,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          github_changelog_generator --user rikezero --project DekTekApp -t $GITHUB_TOKEN
+          github_changelog_generator --user rikezero --project DekTekApp --token $GITHUB_TOKEN
+
+      - name: Invert PR Link and Description Order in CHANGELOG.md
+        run: |
+          sed -E 's/^- \[([#0-9]+)\]\(([^)]+)\) - (.+)/- \3 - [\1](\2)/' CHANGELOG.md > tmp.md && mv tmp.md CHANGELOG.md
 
       - name: Check for CHANGELOG.md Changes
         id: changelog_changes
@@ -136,5 +150,5 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add CHANGELOG.md
-          git commit -m "chore: Update CHANGELOG.md"
+          git commit -m "chore: Update CHANGELOG.md" || echo "No changes to commit"
           git push origin master

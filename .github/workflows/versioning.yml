@@ -1,0 +1,48 @@
+name: Automatic Versioning
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - 'feature/**'
+      - 'fix/**'
+      - 'hotfix/**'
+
+jobs:
+  versioning:
+    name: Calculate Version with GitVersion
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION_NAME: ${{ steps.set_version.outputs.VERSION_NAME }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x' # Specify the .NET version compatible with GitVersion
+
+      - name: Install GitVersion Global Tool
+        run: |
+          dotnet tool install --global GitVersion.Tool --version 6.6.0
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Run GitVersion
+        id: gitversion
+        run: gitversion /output json > gitversion_output.json
+        shell: bash
+
+      - name: Set Version Outputs
+        id: set_version
+        run: |
+          VERSION_NAME=$(jq -r .SemVer gitversion_output.json)
+          MAJOR=$(jq -r .Major gitversion_output.json)
+          MINOR=$(jq -r .Minor gitversion_output.json)
+          PATCH=$(jq -r .Patch gitversion_output.json)
+          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_OUTPUT
+          echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_OUTPUT
