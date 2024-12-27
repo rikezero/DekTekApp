@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   update-version:
+    if: github.actor != 'github-actions[bot]'  # Prevents the workflow from running on its own commits
     name: Calculate and Update VERSION_NAME
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +24,20 @@ jobs:
         with:
           fetch-depth: 0  # Necessary for GitVersion to access full history
 
-      # Step 2: Setup GitVersion using the Official GitVersion GitHub Action
+      # Step 2: Prevent Workflow Loop on Version Bump Commits
+      - name: Prevent Loop on Version Bump Commits
+        if: "startsWith(github.head_commit.message, 'chore: bump version to')"
+        run: |
+          echo "Detected version bump commit. Exiting workflow to prevent loop."
+          exit 0
+
+      # Step 3: Set Up SSH Authentication
+      - name: Set Up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Step 4: Setup GitVersion using the Official GitVersion GitHub Action
       - name: Setup GitVersion
         uses: GitTools/actions/gitversion/execute@v0.9.10
         id: gitversion
@@ -31,7 +45,7 @@ jobs:
           useConfigFile: true
           configFilePath: GitVersion.yml  # Ensure this file exists in your repo
 
-      # Step 3: Extract Version Information and Set Environment Variables
+      # Step 5: Extract Version Information and Set Environment Variables
       - name: Set Version Variables
         run: |
           VERSION_NAME="${{ steps.gitversion.outputs.SemVer }}"
@@ -43,37 +57,51 @@ jobs:
           echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_ENV
         shell: bash
 
-      # Step 4: Update VERSION_NAME Repository Variable via GitHub API
+      # Step 6: Update VERSION_NAME Repository Variable via GitHub API
       - name: Update VERSION_NAME Variable
         run: |
+          # Install jq if not already available
+          sudo apt-get update && sudo apt-get install -y jq
+
           API_URL="https://api.github.com/repos/${{ github.repository }}/actions/variables/VERSION_NAME"
           NEW_VERSION="${VERSION_NAME}"
           
-          # Update the repository variable VERSION_NAME with the new version
-          curl -s -X PATCH "$API_URL" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          # Fetch the current variable ID
+          VARIABLE_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
-            -d "{\"value\": \"${NEW_VERSION}\"}"
-          
-          echo "VERSION_NAME updated to ${NEW_VERSION}"
+            "https://api.github.com/repos/${{ github.repository }}/actions/variables" | \
+            jq -r --arg name "VERSION_NAME" '.variables[] | select(.name==$name) | .id')
+
+          if [ -z "$VARIABLE_ID" ]; then
+            echo "VERSION_NAME variable not found. Creating it."
+            CREATE_RESPONSE=$(curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/actions/variables" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -d "{\"name\": \"VERSION_NAME\", \"value\": \"${NEW_VERSION}\"}")
+
+            UPDATED_VALUE=$(echo "$CREATE_RESPONSE" | jq -r '.value')
+            if [ "$UPDATED_VALUE" == "$NEW_VERSION" ]; then
+              echo "VERSION_NAME successfully created with value ${NEW_VERSION}"
+            else
+              echo "Failed to create VERSION_NAME. Response:"
+              echo "$CREATE_RESPONSE"
+              exit 1
+            fi
+          else
+            # Update existing variable
+            RESPONSE=$(curl -s -X PATCH "$API_URL/$VARIABLE_ID" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -d "{\"value\": \"${NEW_VERSION}\"}")
+
+            # Validate the response
+            UPDATED_VALUE=$(echo "$RESPONSE" | jq -r '.value')
+            if [ "$UPDATED_VALUE" == "$NEW_VERSION" ]; then
+              echo "VERSION_NAME successfully updated to ${NEW_VERSION}"
+            else
+              echo "Failed to update VERSION_NAME. Response:"
+              echo "$RESPONSE"
+              exit 1
+            fi
+          fi
         shell: bash
-
-      # Optional Step 5: Create a Git Tag for the New Version
-      - name: Create Git Tag
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-        run: |
-          git tag -a "v${VERSION_NAME}" -m "Release version ${VERSION_NAME}"
-          git push origin "v${VERSION_NAME}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Optional Step 6: Create GitHub Release
-      - name: Create GitHub Release
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: "v${VERSION_NAME}"
-          release_name: "Release v${VERSION_NAME}"
-          body: "Automated release for version v${VERSION_NAME}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

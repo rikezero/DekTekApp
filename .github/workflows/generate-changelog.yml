@@ -1,107 +1,154 @@
-name: Automatic Versioning
+# .github/workflows/generate_changelog.yml
+
+name: Generate Changelog and Tag Release
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-      - 'feature/**'
-      - 'fix/**'
-      - 'hotfix/**'
+#  push:
+#    branches:
+#      - master
+#    paths-ignore:
+#      - 'CHANGELOG.md'  # Prevent workflow from triggering on changelog updates
+  workflow_run:
+    workflows: [ "Automatic Versioning" ]
+    types:
+      - completed
+
+  workflow_dispatch:
 
 permissions:
-  actions: write  # Grants write permissions to the actions scope, including variables
+  contents: write  # Ensure the GITHUB_TOKEN has write permissions
 
 jobs:
-  update-version:
-    if: github.actor != 'github-actions[bot]'  # Prevents the workflow from running on its own commits
-    name: Calculate and Update VERSION_NAME
+  # 1) Setup job: Extracts the app version from build.gradle or build.gradle.kts
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.get-version.outputs.app_version }}
     steps:
-      # Step 1: Checkout Repository with Full History
-      - name: Checkout Repository
+      - name: Check out repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Necessary for GitVersion to access full history
+          fetch-depth: 0  # Ensure full history for accurate tag checking
 
-      # Step 2: Prevent Workflow Loop on Version Bump Commits
-      - name: Prevent Loop on Version Bump Commits
-        if: startsWith(github.head_commit.message, 'chore: bump version to')
+      - name: Extract App Version
+        id: get-version
         run: |
-          echo "Detected version bump commit. Exiting workflow to prevent loop."
-          exit 0
-
-      # Step 3: Set Up SSH Authentication
-      - name: Set Up SSH
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      # Step 4: Setup GitVersion using the Official GitVersion GitHub Action
-      - name: Setup GitVersion
-        uses: GitTools/actions/gitversion/execute@v0.9.10
-        id: gitversion
-        with:
-          useConfigFile: true
-          configFilePath: GitVersion.yml  # Ensure this file exists in your repo
-
-      # Step 5: Extract Version Information and Set Environment Variables
-      - name: Set Version Variables
-        run: |
-          VERSION_NAME="${{ steps.gitversion.outputs.SemVer }}"
-          MAJOR="${{ steps.gitversion.outputs.Major }}"
-          MINOR="${{ steps.gitversion.outputs.Minor }}"
-          PATCH="${{ steps.gitversion.outputs.Patch }}"
-          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
-          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
-          echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_ENV
-        shell: bash
-
-      # Step 6: Update VERSION_NAME Repository Variable via GitHub API
-      - name: Update VERSION_NAME Variable
-        run: |
-          # Install jq if not already available
-          sudo apt-get update && sudo apt-get install -y jq
-
-          API_URL="https://api.github.com/repos/${{ github.repository }}/actions/variables/VERSION_NAME"
-          NEW_VERSION="${VERSION_NAME}"
-          
-          # Fetch the current variable ID
-          VARIABLE_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/variables" | \
-            jq -r --arg name "VERSION_NAME" '.variables[] | select(.name==$name) | .id')
-
-          if [ -z "$VARIABLE_ID" ]; then
-            echo "VERSION_NAME variable not found. Creating it."
-            CREATE_RESPONSE=$(curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/actions/variables" \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              -d "{\"name\": \"VERSION_NAME\", \"value\": \"${NEW_VERSION}\"}")
-
-            UPDATED_VALUE=$(echo "$CREATE_RESPONSE" | jq -r '.value')
-            if [ "$UPDATED_VALUE" == "$NEW_VERSION" ]; then
-              echo "VERSION_NAME successfully created with value ${NEW_VERSION}"
-            else
-              echo "Failed to create VERSION_NAME. Response:"
-              echo "$CREATE_RESPONSE"
-              exit 1
-            fi
+          # Extract versionName from build.gradle or build.gradle.kts
+          if [ -f app/build.gradle ]; then
+            APP_VERSION=$(grep -oP 'versionName\s*"\K[0-9.]+(?=")' app/build.gradle)
+          elif [ -f app/build.gradle.kts ]; then
+            APP_VERSION=$(grep -oP 'versionName\s*=\s*"\K[0-9.]+(?=")' app/build.gradle.kts)
           else
-            # Update existing variable
-            RESPONSE=$(curl -s -X PATCH "$API_URL/$VARIABLE_ID" \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              -d "{\"value\": \"${NEW_VERSION}\"}")
-
-            # Validate the response
-            UPDATED_VALUE=$(echo "$RESPONSE" | jq -r '.value')
-            if [ "$UPDATED_VALUE" == "$NEW_VERSION" ]; then
-              echo "VERSION_NAME successfully updated to ${NEW_VERSION}"
-            else
-              echo "Failed to update VERSION_NAME. Response:"
-              echo "$RESPONSE"
-              exit 1
-            fi
+            echo "No build.gradle or build.gradle.kts file found!"
+            exit 1
           fi
-        shell: bash
+
+          if [ -z "$APP_VERSION" ]; then
+            echo "Could not extract versionName. Ensure it is defined in build.gradle or build.gradle.kts."
+            exit 1
+          fi
+
+          echo "App version: $APP_VERSION"
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT  # Updated syntax
+
+  # 2) Tagging job: Creates a Git tag for the extracted version if it doesn't exist
+  tagging:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history for accurate tag checking
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+      - name: Set Remote to SSH
+        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
+
+      - name: Check and Create Tag
+        env:
+          APP_VERSION: ${{ needs.setup.outputs.app_version }}
+        run: |
+          # Fetch existing tags
+          git fetch --tags
+
+          # Check if the tag already exists
+          if git rev-parse "v$APP_VERSION" >/dev/null 2>&1; then
+            echo "Tag v$APP_VERSION already exists. Exiting."
+            exit 0
+          fi
+
+          # Create and push the new tag
+          echo "Creating and pushing tag v$APP_VERSION"
+          git tag "v$APP_VERSION"
+          git push origin "v$APP_VERSION"
+
+  # 3) Changelog job: Uses github-changelog-generator to update CHANGELOG.md
+  changelog:
+    runs-on: ubuntu-latest
+    needs: tagging
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history for accurate changelog generation
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+      - name: Set Remote to SSH
+        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+
+      - name: Install Required Gems
+        run: |
+          gem install github_changelog_generator
+          gem install faraday-retry
+
+      - name: Generate CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          github_changelog_generator --user rikezero --project DekTekApp --token $GITHUB_TOKEN
+
+      - name: Invert PR Link and Description Order in CHANGELOG.md
+        run: |
+          sed -E 's/^- \[([#0-9]+)\]\(([^)]+)\) - (.+)/- \3 - [\1](\2)/' CHANGELOG.md > tmp.md && mv tmp.md CHANGELOG.md
+
+      - name: Check for CHANGELOG.md Changes
+        id: changelog_changes
+        run: |
+          # Fetch the latest master to compare
+          git fetch origin master
+
+          # Check if CHANGELOG.md has changes compared to origin/master
+          if git diff --quiet origin/master -- CHANGELOG.md; then
+            echo "No changes detected in CHANGELOG.md."
+            echo "changed=0" >> $GITHUB_OUTPUT  # Updated syntax
+          else
+            echo "Changes detected in CHANGELOG.md."
+            echo "changed=1" >> $GITHUB_OUTPUT  # Updated syntax
+          fi
+
+      - name: Commit and Push Changelog
+        if: steps.changelog_changes.outputs.changed == '1'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "chore: Update CHANGELOG.md" || echo "No changes to commit"
+          git push origin master
