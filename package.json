@@ -1,0 +1,33 @@
+{
+  "name": "dektek",
+  "version": "0.0.1",
+  "description": "A Magic The Gathering android app for creating and managing decks lists, managing collections, searching for cards and prices, etc.",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky install",
+    "commitmsg": "commitlint --edit $1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "husky": "^8.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint --edit $1"
+    }
+  },
+  "lint-staged": {
+    "*.js": ["eslint --fix", "git add"]
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
+  },
+  "author": "Rikezero <rikezero@gmail.com>",
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}

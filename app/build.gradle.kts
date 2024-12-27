@@ -13,8 +13,13 @@ android {
         applicationId = "com.rikezero.dektek"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+
+        versionName = System.getenv("VERSION_NAME") ?: "0.0.1"
+
+        val versionParts = (versionName ?: "0.0.1").split(".")
+        versionCode = (versionParts.getOrNull(0)?.toIntOrNull() ?: 0) * 10000 +
+                (versionParts.getOrNull(1)?.toIntOrNull() ?: 0) * 100 +
+                (versionParts.getOrNull(2)?.toIntOrNull() ?: 0)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -105,4 +110,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.compose.ui.test.manifest)
     implementation(libs.kotlin.reflect)
+}
+
+tasks.named("preBuild") {
+    dependsOn(rootProject.tasks.named("huskyInstall"))
 }

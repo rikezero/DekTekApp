@@ -32,6 +32,8 @@ okhttp3 = "4.11.0"
 # Shimmer
 compose-shimmer = "1.3.1"
 
+node-install = "7.1.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
@@ -95,3 +97,4 @@ mtg-sdk = { group = "io.github.rikezero", name = "mtgapi-kotlin-sdk", version.re
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+node-install = { id = "com.github.node-gradle.node", version.ref = "node-install" }
