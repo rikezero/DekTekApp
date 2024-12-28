@@ -41,9 +41,7 @@ jobs:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v3.1.1
         with:
-          versionSpec: '6.0.x'
-          useConfigFile: true
-          configFilePath: GitVersion.yml
+          preferLatestVersion: true
 
       # Step 5: Determine version
       - name: Determine Version

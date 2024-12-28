@@ -1,45 +1,36 @@
 mode: ContinuousDeployment
-
 branches:
   master:
     regex: ^master$
     increment: Patch
-    tag: ''
+    tag: ""
     tracks-release-branches: true
     prevent-increment-of-merged-branch-version: true
     is-release-branch: true
     commit-message-incrementing: Enabled
-
   dev:
     regex: ^dev$
     increment: Minor
     tag: alpha
     commit-message-incrementing: Enabled
-
   feat:
     regex: ^feat[/-]
     increment: Minor
     tag: feat
     commit-message-incrementing: Enabled
-
   fix:
     regex: ^fix[/-]
     increment: Patch
     tag: fix
     commit-message-incrementing: Enabled
-
   hotfix:
     regex: ^hotfix[/-]
     increment: Patch
     tag: hotfix
     commit-message-incrementing: Enabled
-
 ignore:
   sha: []
-
 commit-message-incrementing: Enabled
-
-# Define how commit messages influence version increments
 commit-message-strategy:
   modes:
     - SemanticVersioning
@@ -62,4 +53,3 @@ commit-message-strategy:
       increment: Patch
     - type: BREAKING CHANGE
       increment: Major
-
