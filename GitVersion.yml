@@ -6,32 +6,41 @@ branches:
     increment: Patch
     label: ''
     tracks-release-branches: true
-    source-branches: ['develop']
+    track-merge-target: false
+    is-main-branch: true
+    source-branches: ['dev', 'feat',]
     prevent-increment:
       of-merged-branch: true
       when-branch-merged: false
     is-release-branch: true
-  develop:
+  dev:
     regex: ^dev$
     increment: Minor
     label: alpha
-    source-branches: []
+    source-branches: ['master', 'dev', 'hotfix', 'fix']
+    track-merge-target: true
+    prevent-increment-of-merged-branch: false
   feat:
-    regex: ^feature[/-]
+    regex: ^feat[/-]
     increment: Minor
-    label: ''
-    source-branches: ['master', 'develop', 'feature', 'hotfix', 'fix']
+    label: '{BranchName}'
+    source-branches: ['master', 'dev']
+    prevent-increment-of-merged-branch: true
   fix:
     regex: ^fix[/-]
     increment: Patch
-    label: ''
+    label: '{BranchName}'
+    source-branches: ['master', 'dev']
+    prevent-increment-of-merged-branch: true
   hotfix:
     regex: ^hotfix[/-]
     increment: Patch
     label: hotfix
+    source-branches: ['master', 'dev']
+    prevent-increment-of-merged-branch: true
 ignore:
   sha: []
 commit-message-incrementing: Enabled
-major-version-bump-message: '\+semver:\s?(breaking|major)'
-minor-version-bump-message: '\+semver:\s?(feature|minor)'
-patch-version-bump-message: '\+semver:\s?(fix|patch)'
+major-version-bump-message: '^(BREAKING CHANGE|refactor):'
+minor-version-bump-message: '^(feat|docs|style|test|chore):'
+patch-version-bump-message: '^(fix|hotfix):'
