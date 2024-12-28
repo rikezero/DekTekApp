@@ -53,10 +53,10 @@ jobs:
       # Step 6: Set Version Variables from GitVersion Outputs
       - name: Set Version Variables
         run: |
-          echo "VERSION_NAME=${{ steps.gitversion.outputs.SemVer }}" >> $GITHUB_ENV
-          echo "MAJOR=${{ steps.gitversion.outputs.Major }}" >> $GITHUB_ENV
-          echo "MINOR=${{ steps.gitversion.outputs.Minor }}" >> $GITHUB_ENV
-          echo "PATCH=${{ steps.gitversion.outputs.Patch }}" >> $GITHUB_ENV
+          echo "VERSION_NAME=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
+          echo "MAJOR=${{ steps.gitversion.outputs.major }}" >> $GITHUB_ENV
+          echo "MINOR=${{ steps.gitversion.outputs.minor }}" >> $GITHUB_ENV
+          echo "PATCH=${{ steps.gitversion.outputs.patch }}" >> $GITHUB_ENV
           echo "VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))" >> $GITHUB_ENV
         shell: bash
 
