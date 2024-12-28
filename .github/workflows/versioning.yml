@@ -48,8 +48,8 @@ jobs:
         uses: gittools/actions/gitversion/command@v3.1.1
         with:
           useConfigFile: true
-          configFilePath: GitVersion.yml
-          arguments: '/output json /verbosity Verbose /config GitVersion.yml'
+          configFilePath: GitVersioning.yml
+          arguments: '/output json /verbosity Verbose /config GitVersioning.yml'
 
       # Step 6: Set Version Variables from GitVersion Outputs
       - name: Set Version Variables
