@@ -8,7 +8,7 @@ branches:
     prevent-increment-of-merged-branch: true
     is-release-branch: true
     commit-message-incrementing: Enabled
-  dev:
+  develop:
     regex: ^dev$
     increment: Minor
     label: alpha
