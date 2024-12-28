@@ -5,29 +5,29 @@ branches:
     increment: Patch
     label: ''
     tracks-release-branches: true
-    prevent-increment-of-merged-branch: true
+    source-branches: ['develop']
+    prevent-increment:
+      of-merged-branch: true
+      when-branch-merged: false
     is-release-branch: true
-    commit-message-incrementing: Enabled
   develop:
     regex: ^dev$
     increment: Minor
     label: alpha
-    commit-message-incrementing: Enabled
+    source-branches: []
   feat:
     regex: ^feature[/-]
     increment: Minor
     label: ''
-    commit-message-incrementing: Enabled
+    source-branches: ['master', 'develop', 'feature', 'hotfix', 'fix']
   fix:
     regex: ^fix[/-]
     increment: Patch
     label: ''
-    commit-message-incrementing: Enabled
   hotfix:
     regex: ^hotfix[/-]
     increment: Patch
     label: hotfix
-    commit-message-incrementing: Enabled
 ignore:
   sha: []
 commit-message-incrementing: Enabled
