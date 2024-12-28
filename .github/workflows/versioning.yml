@@ -45,6 +45,7 @@ jobs:
 
       # Step 5: Determine version
       - name: Determine Version
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v3.1.1
         with:
           useConfigFile: true
