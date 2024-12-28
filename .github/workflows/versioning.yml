@@ -49,7 +49,7 @@ jobs:
         with:
           useConfigFile: true
           configFilePath: GitVersion.yml
-          arguments: '/output json /verbosity debug /config GitVersion.yml'
+          arguments: '/output json /verbosity Verbose /config GitVersion.yml'
 
       # Step 6: Set Version Variables from GitVersion Outputs
       - name: Set Version Variables
