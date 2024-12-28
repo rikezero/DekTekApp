@@ -60,6 +60,14 @@ jobs:
           echo "VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))" >> $GITHUB_ENV
         shell: bash
 
+      # Step 6.1 Debug environment vars
+      - name: Debug GitVersion Outputs
+        run: |
+          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
+          echo "Major: ${{ steps.gitversion.outputs.major }}"
+          echo "Minor: ${{ steps.gitversion.outputs.minor }}"
+          echo "Patch: ${{ steps.gitversion.outputs.patch }}"
+
       # Step 7: Update VERSION_NAME Repository Variable via Set GitHub Variable Action
       - name: Update VERSION_NAME Variable
         uses: mmoyaferrer/set-github-variable@v1.0.0  # Use the latest stable version
