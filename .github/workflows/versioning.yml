@@ -49,6 +49,9 @@ jobs:
         with:
           useConfigFile: true
           configFilePath: GitVersion.yml
+        env:
+          GIT_TRACE: 1
+          GIT_CURL_VERBOSE: 1
 
       # Step 6: Set Version Variables from GitVersion Outputs
       - name: Set Version Variables
