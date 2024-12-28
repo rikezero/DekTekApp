@@ -19,25 +19,29 @@ branches:
     label: alpha
     source-branches: ['master', 'dev', 'hotfix', 'fix']
     track-merge-target: true
-    prevent-increment-of-merged-branch: false
+    prevent-increment:
+      of-merged-branch: false
   feat:
     regex: ^feat[/-]
     increment: Minor
     label: '{BranchName}'
     source-branches: ['master', 'dev']
-    prevent-increment-of-merged-branch: true
+    prevent-increment:
+      of-merged-branch: true
   fix:
     regex: ^fix[/-]
     increment: Patch
     label: '{BranchName}'
     source-branches: ['master', 'dev']
-    prevent-increment-of-merged-branch: true
+    prevent-increment:
+      of-merged-branch: true
   hotfix:
     regex: ^hotfix[/-]
     increment: Patch
     label: hotfix
     source-branches: ['master', 'dev']
-    prevent-increment-of-merged-branch: true
+    prevent-increment:
+      of-merged-branch: true
 ignore:
   sha: []
 commit-message-incrementing: Enabled
