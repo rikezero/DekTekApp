@@ -45,11 +45,11 @@ jobs:
 
       # Step 5: Determine version
       - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v3.1.1
+        uses: gittools/actions/gitversion/command@v3.1.1
         with:
           useConfigFile: true
           configFilePath: GitVersion.yml
-          arguments: '/showConfig'
+          arguments: '/output json /verbosity debug /config GitVersion.yml'
 
       # Step 6: Set Version Variables from GitVersion Outputs
       - name: Set Version Variables
