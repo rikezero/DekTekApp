@@ -3,7 +3,7 @@ branches:
   master:
     regex: ^master$
     increment: Patch
-    tag: ""
+    label: ''
     tracks-release-branches: true
     prevent-increment-of-merged-branch-version: true
     is-release-branch: true
@@ -11,22 +11,22 @@ branches:
   dev:
     regex: ^dev$
     increment: Minor
-    tag: alpha
+    label: alpha
     commit-message-incrementing: Enabled
   feat:
     regex: ^feature[/-]
     increment: Minor
-    tag: feat
+    label: ''
     commit-message-incrementing: Enabled
   fix:
     regex: ^fix[/-]
     increment: Patch
-    tag: fix
+    label: ''
     commit-message-incrementing: Enabled
   hotfix:
     regex: ^hotfix[/-]
     increment: Patch
-    tag: hotfix
+    label: hotfix
     commit-message-incrementing: Enabled
 ignore:
   sha: []
