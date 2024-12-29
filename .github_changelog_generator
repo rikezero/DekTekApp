@@ -1,4 +1,3 @@
----
 configure_sections:
   major_updates:
     prefix: "**Major Updates**"
