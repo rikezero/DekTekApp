@@ -1,36 +1,27 @@
-# .github_changelog_generator
-
+---
 configure_sections:
   major_updates:
     prefix: "**Major Updates**"
     labels:
-      - "BREAKING CHANGE"
-      - "refactor"
+      - BREAKING CHANGE
+      - refactor
   fixes:
     prefix: "**Fixes:**"
     labels:
-      - "hotfix"
-      - "fix"
+      - hotfix
+      - fix
   features:
     prefix: "**Features:**"
     labels:
-      - "feat"
+      - feat
   miscellaneous:
-    prefix: "Miscellaneous"
+    prefix: Miscellaneous
     labels:
-      - "style"
-      - "test"
-      - "docs"
-      - "chore"
-
-# Optional: Set the main title of the changelog
-title: "Changelog"
-
-# Optional: Specify the starting version
-starting_version: "0.1.0"
-
-# Enable inclusion of commits that are not part of PRs
+      - style
+      - test
+      - docs
+      - chore
+title: Changelog
+starting_version: 0.1.0
 include_commits: true
-
-# Optional: Customize date format
 date_format: "%d-%m-%Y"
