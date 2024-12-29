@@ -1,5 +1,6 @@
 workflow: GitHubFlow/v1
 mode: ContinuousDelivery
+update-build-number: true
 branches:
   master:
     regex: ^master$
@@ -45,6 +46,6 @@ branches:
 ignore:
   sha: []
 commit-message-incrementing: Enabled
-major-version-bump-message: '^(BREAKING CHANGE|refactor):'
+major-version-bump-message: '^(refactor)(!|):\s.*(\n\nBREAKING CHANGE:\s.+)?'
 minor-version-bump-message: '^(feat|docs|style|test|chore):'
 patch-version-bump-message: '^(fix|hotfix):'
