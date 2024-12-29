@@ -88,7 +88,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           user: rikezero
-          owner: rikezero
           repo: rikezero/DekTekApp
           base: CHANGELOG.md
           output: CHANGELOG.md
