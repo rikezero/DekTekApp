@@ -1,17 +1,23 @@
 # .github_changelog_generator
 
-# Define categories in the desired order
-categories:
-  - title: "Fixes"
+configure_sections:
+  major_updates:
+    prefix: "**Major Updates**"
+    labels:
+      - "BREAKING CHANGE"
+      - "refactor"
+  fixes:
+    prefix: "**Fixes:**"
     labels:
       - "hotfix"
       - "fix"
-  - title: "Features"
+  features:
+    prefix: "**Features:**"
     labels:
       - "feat"
-  - title: "Miscellaneous"
+  miscellaneous:
+    prefix: "Miscellaneous"
     labels:
-      - "refactor"
       - "style"
       - "test"
       - "docs"
@@ -21,10 +27,10 @@ categories:
 title: "Changelog"
 
 # Optional: Specify the starting version
-starting_version: "0.0.1"
+starting_version: "0.1.0"
 
 # Enable inclusion of commits that are not part of PRs
 include_commits: true
 
 # Optional: Customize date format
-date_format: "%Y-%m-%d"
+date_format: "%d-%m-%Y"

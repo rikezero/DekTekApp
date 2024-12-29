@@ -20,7 +20,7 @@ jobs:
       app_version: ${{ steps.get-version.outputs.app_version }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Ensure full history for accurate tag checking
 
@@ -40,7 +40,7 @@ jobs:
     needs: setup
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Ensure full history for accurate tag checking
 
@@ -78,39 +78,20 @@ jobs:
     needs: tagging
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Ensure full history for accurate changelog generation
 
-      - name: Configure SSH for Pushing Changelog
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-
-      - name: Set Remote to SSH
-        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-
-      - name: Install Required Gems
-        run: |
-          gem install github_changelog_generator
-          gem install faraday-retry
-
-      - name: Generate CHANGELOG.md
+      - name: Generate Changelog
+        uses: janheinrichmerker/action-github-changelog-generator@v2.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          github_changelog_generator --user rikezero --project DekTekApp --token $GITHUB_TOKEN
-
-      - name: Reformat PR Links in CHANGELOG.md
-        run: |
-          sed -E 's/^- \[([#0-9]+)\]\(([^)]+)\) - (.+)/- \3 - [\1](\2)/' CHANGELOG.md > tmp.md && mv tmp.md CHANGELOG.md
+        with:
+          user: rikezero
+          owner: rikezero
+          repo: rikezero/DekTekApp
+          base: CHANGELOG.md
+          output: CHANGELOG.md
 
       - name: Check for Changes in CHANGELOG.md
         id: changelog_changes
