@@ -3,11 +3,11 @@
 name: Generate Changelog and Tag Release
 
 on:
-#  push:
-#    branches:
-#      - master
-#    paths-ignore:
-#      - 'CHANGELOG.md'  # Prevent workflow from triggering on changelog updates
+  #  push:
+  #    branches:
+  #      - master
+  #    paths-ignore:
+  #      - 'CHANGELOG.md'  # Prevent workflow from triggering on changelog updates
   workflow_run:
     workflows: [ "Automatic Versioning" ]
     types:
@@ -20,25 +20,25 @@ permissions:
 
 jobs:
   setup:
-  runs-on: ubuntu-latest
-  outputs:
-    app_version: ${{ steps.get-version.outputs.app_version }}
-  steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0  # Ensure full history for accurate tag checking
+    runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.get-version.outputs.app_version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history for accurate tag checking
 
-    - name: Set App Version
-      id: get-version
-      run: |
-        if [ -z "$VERSION_NAME" ]; then
-          echo "VERSION_NAME environment variable is not set. Please ensure it is defined in your workflow."
-          exit 1
-        fi
-
-        echo "App version: $VERSION_NAME"
-        echo "app_version=$VERSION_NAME" >> $GITHUB_OUTPUT
+      - name: Set App Version
+        id: get-version
+        run: |
+          if [ -z "$VERSION_NAME" ]; then
+            echo "VERSION_NAME environment variable is not set. Please ensure it is defined in your workflow."
+            exit 1
+          fi
+          
+          echo "App version: $VERSION_NAME"
+          echo "app_version=$VERSION_NAME" >> $GITHUB_OUTPUT
 
   # 2) Tagging job: Creates a Git tag for the extracted version if it doesn't exist
   tagging:
