@@ -59,50 +59,7 @@ module.exports = {
           },
         ],
       },
-      writerOpts: {
-        transform: (commit, context) => {
-          const issues = [];
-
-          if (commit.scope === '*') {
-            commit.scope = '';
-          }
-
-          if (typeof commit.hash === 'string') {
-            commit.shortHash = commit.hash.substring(0, 7);
-          }
-
-          if (typeof commit.subject === 'string') {
-            commit.subject = commit.subject.replace(/#([0-9]+)/g, (_, issue) => {
-              issues.push(issue);
-              return `[#${issue}](${context.repository}/issues/${issue})`;
-            });
-            commit.subject = commit.subject.replace(/@([a-zA-Z0-9_-]+)/g, '[@$1](https://github.com/$1)');
-          }
-
-          commit.hash = `[${commit.shortHash}](${context.repository}/commit/${commit.shortHash})`;
-
-          return commit;
-        },
-        groupBy: "type",
-        commitsSort: ["scope", "subject"],
-        noteGroupsSort: "title",
-        notesSort: "text",
-        mainTemplate: `
-{{> header}}
-
-{{#each commitGroups}}
-
-### {{title}}
-
-{{#each commits}}
-- {{type}}: {{subject}} ({{hash}})
-{{/each}}
-
-{{/each}}
-{{> footer}}
-`,
-        commitPartial: "- {{type}}: {{subject}} ({{hash}})",
-      },
+      writerOpts: "./changelog-writter.js",
     },
   },
 };
