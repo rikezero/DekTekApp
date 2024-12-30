@@ -1,0 +1,29 @@
+preset: angular
+infile: CHANGELOG.md
+strictSemVer: true
+header: |
+  # DekTek Changelog
+
+  All notable changes are listed below.
+  
+types:
+  - type: BREAKING CHANGE
+    section: "⚠️ Major Changes"
+  - type: refactor
+    section: "⚠️ Major Changes"
+  - type: fix
+    section: "🐛 Bug Fixes"
+  - type: hotfix
+    section: "🐛 Bug Fixes"
+  - type: feat
+    section: "✨ New Features"
+  - type: docs
+    section: "🛠️ Miscellaneous"
+  - type: style
+    section: "🛠️ Miscellaneous"
+  - type: test
+    section: "🛠️ Miscellaneous"
+  - type: chore
+    section: "🛠️ Miscellaneous"
+
+commitPartial: "- {{type}}: {{subject}} ({{hash}})"

@@ -1,10 +1,12 @@
 name: Generate Changelog and Tag Release
 
 on:
-  workflow_run:
-    workflows: ["Automatic Versioning"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
+    pull_request:
+      types:
+        - closed
   workflow_dispatch:
 
 permissions:
@@ -19,97 +21,45 @@ jobs:
     outputs:
       app_version: ${{ steps.get-version.outputs.app_version }}
     steps:
+      # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Ensure full history for accurate tag checking
 
-      - name: Set App Version
-        id: get-version
-        run: |
-          if [ -z "$VERSION_NAME" ]; then
-            echo "VERSION_NAME environment variable is not set. Please ensure it is defined in your workflow."
-            exit 1
-          fi
-          echo "App version: $VERSION_NAME"
-          echo "app_version=$VERSION_NAME" >> $GITHUB_OUTPUT
+      # Step 2: Install dependencies
+      - name: Install dependencies
+        run: npm install
+  release:
+    # Step 1: Check out repository
+    - name: Check out repository
+      uses: actions/checkout@v4
 
-  # 2) Tagging job: Creates a Git tag for the extracted version if it doesn't exist
-  tagging:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Ensure full history for accurate tag checking
+    # Step 2: Calculate version, create tag and update changelog
+    - name: Generate version and changelog retroactively
+      uses: TheRealWaldo/release-it@v2
+      with:
+        config: .release-it.json
+        json-opts: >
+          {
+            "git": {
+              "from": "$(git rev-list --max-parents=0 HEAD)"
+            }
+          }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure SSH for Tag Push
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+    # Step 3: Extract the calculated version from release-it
+    - name: Extract VERSION_NAME from Release It!
+      id: extract-version
+      run: |
+        VERSION=$(npx release-it --ci --dry-run | grep -oP 'Version \K[0-9]+\.[0-9]+\.[0-9]+')
+        echo "Extracted version: $VERSION"
+        echo "VERSION_NAME=$VERSION" >> $GITHUB_ENV
 
-      - name: Set Remote to SSH
-        run: git remote set-url origin git@github.com:rikezero/DekTekApp.git
-
-      - name: Create and Push Tag
-        env:
-          APP_VERSION: ${{ needs.setup.outputs.app_version }}
-        run: |
-          # Fetch existing tags
-          git fetch --tags
-
-          # Check if the tag already exists
-          if git rev-parse "v$APP_VERSION" >/dev/null 2>&1; then
-            echo "Tag v$APP_VERSION already exists. Exiting."
-            exit 0
-          fi
-
-          # Create and push the new tag
-          echo "Creating and pushing tag v$APP_VERSION"
-          git tag "v$APP_VERSION"
-          git push origin "v$APP_VERSION"
-
-  # 3) Changelog job: Generate and update CHANGELOG.md
-  changelog:
-    runs-on: ubuntu-latest
-    needs: tagging
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Ensure full history for accurate changelog generation
-
-      - name: Generate Changelog
-        uses: janheinrichmerker/action-github-changelog-generator@v2.4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          user: rikezero
-          repo: rikezero/DekTekApp
-          base: CHANGELOG.md
-          output: CHANGELOG.md
-
-      - name: Check for Changes in CHANGELOG.md
-        id: changelog_changes
-        run: |
-          # Compare the current CHANGELOG.md with origin/master
-          git fetch origin master
-          if git diff --quiet origin/master -- CHANGELOG.md; then
-            echo "No changes detected in CHANGELOG.md."
-            echo "changed=0" >> $GITHUB_OUTPUT
-          else
-            echo "Changes detected in CHANGELOG.md."
-            echo "changed=1" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and Push Changelog
-        if: steps.changelog_changes.outputs.changed == '1'
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
-          git add CHANGELOG.md
-          git commit -m "chore: Update CHANGELOG.md" || echo "No changes to commit"
-          git push origin master
+    # Step 4: Update VERSION_NAME Repository Variable
+    - name: Update VERSION_NAME Variable
+      uses: mmoyaferrer/set-github-variable@v1.0.0
+      with:
+        name: VERSION_NAME
+        value: ${{ env.VERSION_NAME }}
+        repository: rikezero/DekTekApp
+        token: ${{ secrets.PAT_TOKEN }}

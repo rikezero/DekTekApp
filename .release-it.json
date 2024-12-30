@@ -1,0 +1,22 @@
+{
+  "git": {
+    "requireCleanWorkingDir": true,
+    "commit": true,
+    "tag": true,
+    "tagName": "${version}",
+    "tagAnnotation": "Release ${version}",
+    "push": true
+  },
+  "github": {
+    "release": false,
+    "tokenRef": "GITHUB_TOKEN"
+  },
+  "npm": {
+    "publish": false
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "config": "./release-config.yaml"
+    }
+  }
+}
