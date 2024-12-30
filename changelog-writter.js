@@ -10,7 +10,7 @@ const writerOpts = {
       commit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
     }
 
-    // Define sections based on commit type
+    // Define sections for grouping
     const typeToSectionMap = {
       "BREAKING CHANGE": "⚠️ Major Changes",
       refactor: "⚠️ Major Changes",
@@ -23,35 +23,28 @@ const writerOpts = {
       chore: "🛠️ Miscellaneous",
     };
 
-    // Assign section to the commit
-    commit.section = typeToSectionMap[commit.type] || "Other";
-
-    // Format the type for display
-    commit.typeFormatted = commit.type.charAt(0).toUpperCase() + commit.type.slice(1);
+    // Add section to commit if type matches
+    commit.section = typeToSectionMap[commit.type] || "Uncategorized";
 
     return commit;
   },
-  groupBy: "section", // Group by the `section` field
-  commitGroupsSort: "title", // Sort groups alphabetically
-  commitsSort: ["scope", "subject"], // Sort commits within each group
-  commitPartial: "- {{typeFormatted}}: {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
+  groupBy: "section", // Group by section
+  commitPartial: "- {{type}}: {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
   mainTemplate: `
     {{> header}}
 
-    {{#if commitGroups}}
-      {{#each commitGroups}}
-        ### {{title}}
-        {{#each commits}}
-          {{> commit}}
-        {{/each}}
-      {{/each}}
-    {{/if}}
+    {{#each groups}}
+    ## {{title}}
+    {{#each commits}}
+    {{> commit}}
+    {{/each}}
+    {{/each}}
   `,
   headerPartial: `
-    # Changelog
+    # DekTek Changelog
     All notable changes are listed below.
   `,
-  footerPartial: ``
+  groupedCommitPartial: "- {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
 };
 
 module.exports = writerOpts;
