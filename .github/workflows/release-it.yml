@@ -38,7 +38,7 @@ jobs:
 
       # Step 2: Calculate version, create tag and update changelog
       - name: Generate version and changelog retroactively
-        uses: TheRealWaldo/release-it@v2
+        uses: TheRealWaldo/release-it@v0.7.2
         with:
           config: .release-it.json
           json-opts: >
