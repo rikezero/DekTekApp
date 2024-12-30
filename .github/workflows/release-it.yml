@@ -1,4 +1,4 @@
-name: Generate Changelog and Tag Release
+name: Calculate version, generate changelog and tag
 
 on:
   push:
