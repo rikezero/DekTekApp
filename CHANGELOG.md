@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.10 (2024-12-30)</small>
+
+* chore: implemented partials for better layout ([7898374](https://github.com/rikezero/DekTekApp/commit/7898374))
+
 ## <small>0.2.9 (2024-12-30)</small>
 
 * chore: testing if odd behaviour was caused by weird syntax ([839f34e](https://github.com/rikezero/DekTekApp/commit/839f34e))
