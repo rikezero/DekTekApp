@@ -31,7 +31,7 @@ const writerOpts = {
     return commit;
   },
   groupBy: "section", // Group commits by `section` field
-  commitPartial: "- {{typeFormatted}}: {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
+  commitPartial: "- {{typeFormatted}}: {{section}} {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
   mainTemplate: `
     {{> header}}
 
