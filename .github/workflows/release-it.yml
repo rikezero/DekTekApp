@@ -28,13 +28,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 3: Calculate version, create tag, and update changelog
+      # Step 3: Configure credentials
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      # Step 4: Calculate version, create tag, and update changelog
       - name: Generate version and changelog
         run: npx release-it --config .release-it.json --git.from="$(git rev-list --max-parents=0 HEAD)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 4: Extract the calculated version from release-it
+      # Step 5: Extract the calculated version from release-it
       - name: Extract VERSION_NAME from Release It!
         id: extract-version
         run: |
@@ -43,7 +49,7 @@ jobs:
           echo "VERSION_NAME=$VERSION" >> $GITHUB_ENV
 
 
-      # Step 5: Update VERSION_NAME Repository Variable
+      # Step 6: Update VERSION_NAME Repository Variable
       - name: Update VERSION_NAME Variable
         uses: mmoyaferrer/set-github-variable@v1.0.0
         with:
