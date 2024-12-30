@@ -7,23 +7,23 @@ header: |
   All notable changes are listed below.
   
 types:
-  - type: BREAKING CHANGE
+  - BREAKING CHANGE: "major"
     section: "⚠️ Major Changes"
-  - type: refactor
+  - refactor: "major"
     section: "⚠️ Major Changes"
-  - type: fix
+  - fix: "patch"
     section: "🐛 Bug Fixes"
-  - type: hotfix
+  - hotfix: "patch"
     section: "🐛 Bug Fixes"
-  - type: feat
+  - feat: "minor"
     section: "✨ New Features"
-  - type: docs
+  - docs: "minor"
     section: "🛠️ Miscellaneous"
-  - type: style
+  - style: "minor"
     section: "🛠️ Miscellaneous"
-  - type: test
+  - test: "minor"
     section: "🛠️ Miscellaneous"
-  - type: chore
+  - chore: "minor"
     section: "🛠️ Miscellaneous"
 
 commitPartial: "- {{type}}: {{subject}} ({{hash}})"

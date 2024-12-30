@@ -28,15 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: List installed dependencies
-        run: |
-          ls -l node_modules/release-it
-          ls -l node_modules/@release-it/conventional-changelog
-
-
       # Step 3: Calculate version, create tag, and update changelog
       - name: Generate version and changelog
-        run: npx release-it --config .release-it.json --git.from="$(git rev-list --max-parents=0 HEAD)" --VV
+        run: npx release-it --config .release-it.json --git.from="$(git rev-list --max-parents=0 HEAD)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
