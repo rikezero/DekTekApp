@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.12 (2024-12-30)</small>
+
+* chore: implemented logic for checking type and correctly grouping them ([8bfa68b](https://github.com/rikezero/DekTekApp/commit/8bfa68b))
+
 ## <small>0.2.11 (2024-12-30)</small>
 
 * chore: implemented partials for better layout ([65d207d](https://github.com/rikezero/DekTekApp/commit/65d207d))
