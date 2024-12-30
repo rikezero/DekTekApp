@@ -29,37 +29,39 @@ jobs:
       - name: Install dependencies
         run: npm install
   release:
-    # Step 1: Check out repository
-    - name: Check out repository
-      uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out repository
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    # Step 2: Calculate version, create tag and update changelog
-    - name: Generate version and changelog retroactively
-      uses: TheRealWaldo/release-it@v2
-      with:
-        config: .release-it.json
-        json-opts: >
-          {
-            "git": {
-              "from": "$(git rev-list --max-parents=0 HEAD)"
+      # Step 2: Calculate version, create tag and update changelog
+      - name: Generate version and changelog retroactively
+        uses: TheRealWaldo/release-it@v2
+        with:
+          config: .release-it.json
+          json-opts: >
+            {
+              "git": {
+                "from": "$(git rev-list --max-parents=0 HEAD)"
+              }
             }
-          }
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # Step 3: Extract the calculated version from release-it
-    - name: Extract VERSION_NAME from Release It!
-      id: extract-version
-      run: |
-        VERSION=$(npx release-it --ci --dry-run | grep -oP 'Version \K[0-9]+\.[0-9]+\.[0-9]+')
-        echo "Extracted version: $VERSION"
-        echo "VERSION_NAME=$VERSION" >> $GITHUB_ENV
+      # Step 3: Extract the calculated version from release-it
+      - name: Extract VERSION_NAME from Release It!
+        id: extract-version
+        run: |
+          VERSION=$(npx release-it --ci --dry-run | grep -oP 'Version \K[0-9]+\.[0-9]+\.[0-9]+')
+          echo "Extracted version: $VERSION"
+          echo "VERSION_NAME=$VERSION" >> $GITHUB_ENV
 
-    # Step 4: Update VERSION_NAME Repository Variable
-    - name: Update VERSION_NAME Variable
-      uses: mmoyaferrer/set-github-variable@v1.0.0
-      with:
-        name: VERSION_NAME
-        value: ${{ env.VERSION_NAME }}
-        repository: rikezero/DekTekApp
-        token: ${{ secrets.PAT_TOKEN }}
+      # Step 4: Update VERSION_NAME Repository Variable
+      - name: Update VERSION_NAME Variable
+        uses: mmoyaferrer/set-github-variable@v1.0.0
+        with:
+          name: VERSION_NAME
+          value: ${{ env.VERSION_NAME }}
+          repository: rikezero/DekTekApp
+          token: ${{ secrets.PAT_TOKEN }}
