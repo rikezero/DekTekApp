@@ -16,12 +16,13 @@ const writerOpts = {
     return commit;
   },
   groupBy: "type", // Group commits by `section` field
-  commitPartial: "- {{typeFormatted}}: {{}} {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
+  commitGroupsSort: "section"
+  commitPartial: "- {{typeFormatted}}: {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
   mainTemplate: `
     {{> header}}
 
     {{#each commitGroups}}
-    ## {{section}} <!-- Section Title -->
+    {{> title}}
     {{#each commits}}
     {{> commit}}
     {{/each}}
