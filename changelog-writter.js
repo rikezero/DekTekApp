@@ -2,14 +2,14 @@ const writerOpts = {
   transform: (commit, context) => {
     const typeToSectionMap = {
       "BREAKING CHANGE": "⚠️ Major Changes",
-      refactor: "⚠️ Major Changes",
-      fix: "🐛 Bug Fixes",
-      hotfix: "🐛 Bug Fixes",
-      feat: "✨ New Features",
-      docs: "🛠️ Miscellaneous",
-      style: "🛠️ Miscellaneous",
-      test: "🛠️ Miscellaneous",
-      chore: "🛠️ Miscellaneous",
+      "refactor": "⚠️ Major Changes",
+      "fix": "🐛 Bug Fixes",
+      "hotfix": "🐛 Bug Fixes",
+      "feat": "✨ New Features",
+      "docs": "🛠️ Miscellaneous",
+      "style": "🛠️ Miscellaneous",
+      "test": "🛠️ Miscellaneous",
+      "chore": "🛠️ Miscellaneous",
     };
 
     // Assign section based on type
