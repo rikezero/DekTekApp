@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.5 (2024-12-30)</small>
+
+* chore: changed changelog Layout ([1324c5b](https://github.com/rikezero/DekTekApp/commit/1324c5b))
+
 ## <small>0.2.4 (2024-12-30)</small>
 
 * chore: changed changelog Layout ([3ea9916](https://github.com/rikezero/DekTekApp/commit/3ea9916))
