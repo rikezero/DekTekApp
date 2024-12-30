@@ -36,18 +36,14 @@ jobs:
 
       # Step 4: Calculate version, create tag, and update changelog
       - name: Generate version and changelog
-        run: npx release-it --config .release-it.json --git.from="$(git rev-list --max-parents=0 HEAD)"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Step 5: Extract the calculated version from release-it
-      - name: Extract VERSION_NAME from Release It!
-        id: extract-version
+        id: release-it
         run: |
-          VERSION=$(npx release-it --config .release-it.json --ci --dry-run | grep -oP 'Version \K[0-9]+\.[0-9]+\.[0-9]+')
+          npx release-it --config .release-it.json > release-it-output.log
+          VERSION=$(grep -oP 'Version \K[0-9]+\.[0-9]+\.[0-9]+' release-it-output.log)
           echo "Extracted version: $VERSION"
           echo "VERSION_NAME=$VERSION" >> $GITHUB_ENV
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Step 6: Update VERSION_NAME Repository Variable
       - name: Update VERSION_NAME Variable

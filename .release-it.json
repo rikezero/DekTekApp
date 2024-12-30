@@ -60,7 +60,7 @@
         ]
       },
       "writerOpts": {
-        "commitPartial": "- {{type}}: {{subject}} ({{hash}})"
+        "commitPartial": "- {{type}}: {{subject}} ({{hash}})\n"
       }
     }
   }
