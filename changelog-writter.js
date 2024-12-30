@@ -1,16 +1,5 @@
 const writerOpts = {
   transform: (commit, context) => {
-    // Map PR numbers to links
-    if (commit.pullRequest && commit.pullRequest.number) {
-      commit.pullRequestLink = `[PR #${commit.pullRequest.number}](${context.repository}/pull/${commit.pullRequest.number})`;
-    }
-
-    // Map commit hashes to links
-    if (commit.hash) {
-      commit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
-    }
-
-    // Define sections for grouping
     const typeToSectionMap = {
       "BREAKING CHANGE": "⚠️ Major Changes",
       refactor: "⚠️ Major Changes",
@@ -23,18 +12,31 @@ const writerOpts = {
       chore: "🛠️ Miscellaneous",
     };
 
-    // Add section to commit if type matches
-    commit.section = typeToSectionMap[commit.type] || "Uncategorized";
+    // Assign section based on type
+    commit.section = typeToSectionMap[commit.type] || "🛠️ Miscellaneous";
+
+    // Map PR numbers to links
+    if (commit.pullRequest && commit.pullRequest.number) {
+      commit.pullRequestLink = `[PR #${commit.pullRequest.number}](${context.repository}/pull/${commit.pullRequest.number})`;
+    }
+
+    // Map commit hashes to links
+    if (commit.hash) {
+      commit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
+    }
+
+    // Format type for display
+    commit.typeFormatted = commit.type.charAt(0).toUpperCase() + commit.type.slice(1);
 
     return commit;
   },
-  groupBy: "section", // Group by section
-  commitPartial: "- {{type}}: {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
+  groupBy: "section", // Group commits by `section` field
+  commitPartial: "- {{typeFormatted}}: {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
   mainTemplate: `
     {{> header}}
 
     {{#each groups}}
-    ## {{title}}
+    ## {{title}} <!-- Section Title -->
     {{#each commits}}
     {{> commit}}
     {{/each}}
@@ -44,7 +46,7 @@ const writerOpts = {
     # DekTek Changelog
     All notable changes are listed below.
   `,
-  groupedCommitPartial: "- {{subject}} {{#if pullRequestLink}}({{pullRequestLink}}){{else}}({{commitLink}}){{/if}}",
+  footerPartial: ``,
 };
 
 module.exports = writerOpts;
