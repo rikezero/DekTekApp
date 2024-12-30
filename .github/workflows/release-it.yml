@@ -28,6 +28,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: List installed dependencies
+        run: |
+          ls -l node_modules/release-it
+          ls -l node_modules/@release-it/conventional-changelog
+
+
       # Step 3: Calculate version, create tag and update changelog
       - name: Generate version and changelog retroactively
         uses: TheRealWaldo/release-it@v0.7.2
