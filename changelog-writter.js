@@ -28,13 +28,13 @@ const writerOpts = {
     {{> header}}
     {{#each commitGroups}}
       {{#if (eq title "feat")}}
-        ## ✨ New Features
+        ✨ New Features
       {{else if (eq title "BREAKING CHANGE" "refactor")}}
-        ## ⚠️ Major Changes
+        ⚠️ Major Changes
       {{else if (or title "fix" "hotfix")}}
-        ## 🐛 Bug Fixes
+        🐛 Bug Fixes
       {{else}}
-        ## 🛠️ Miscellaneous
+        🛠️ Miscellaneous
       {{/if}}
       {{#each commits}}
         {{> commit}}
