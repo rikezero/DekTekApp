@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.3 (2024-12-30)</small>
+
+* chore: changed changelog Layout and updated workflow ([a210355](https://github.com/rikezero/DekTekApp/commit/a210355))
+
 ## <small>0.2.2 (2024-12-30)</small>
 
 * fix: reworked workflow to streamline it ([568a0e2](https://github.com/rikezero/DekTekApp/commit/568a0e2))
