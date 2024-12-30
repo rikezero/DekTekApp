@@ -11,9 +11,9 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.0",
     "@commitlint/config-conventional": "^17.0.0",
+    "@release-it/conventional-changelog": "^9.0.4",
     "husky": "^8.0.0",
-    "release-it": "^17.11.0",
-    "@release-it/conventional-changelog": "^9.0.4"
+    "release-it": "^17.11.0"
   },
   "husky": {
     "hooks": {
@@ -22,7 +22,10 @@
     }
   },
   "lint-staged": {
-    "*.js": ["eslint --fix", "git add"]
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "author": "Rikezero <rikezero@gmail.com>",
   "license": "GPL-3.0",

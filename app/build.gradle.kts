@@ -114,4 +114,5 @@ dependencies {
 
 tasks.named("preBuild") {
     dependsOn(rootProject.tasks.named("setupHusky"))
+    dependsOn(rootProject.tasks.named("setupReleaseIt"))
 }

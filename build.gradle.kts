@@ -42,3 +42,24 @@ tasks.register<NodeTask>("setupHusky") {
     }
 }
 
+tasks.register<NodeTask>("setupReleaseIt") {
+    description = "Sets up Release It"
+    group = "build setup"
+    dependsOn("npmInstall") // Ensure npm dependencies are installed
+
+    // Use nodeProjectDir to define the Node.js context
+    val nodeDir = node.nodeProjectDir.get().asFile
+    val nodeExecutable = project.layout.buildDirectory.asFile.get().resolve("nodejs")
+        .resolve("node-v18.17.1-win-x64")
+        .resolve("node.exe")
+        .absolutePath
+
+    script.set(file("release-it-install.js")) // Path to the Husky setup script
+    args.addAll("--node-path", nodeExecutable) // Pass the resolved Node.js path to the script
+
+    doFirst {
+        println("Using Node.js project directory: $nodeDir")
+        println("Using Node.js executable: $nodeExecutable")
+    }
+}
+
