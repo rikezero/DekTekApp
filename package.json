@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prepare": "husky install",
-    "commitmsg": "commitlint --edit $1",
-    "release": "release-it"
+    "commitmsg": "commitlint --edit $1"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.0",
