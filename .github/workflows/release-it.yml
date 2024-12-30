@@ -36,7 +36,7 @@ jobs:
 
       # Step 3: Calculate version, create tag, and update changelog
       - name: Generate version and changelog
-        run: npx release-it --config .release-it.json --git.from="$(git rev-list --max-parents=0 HEAD)" -VV
+        run: npx release-it --config .release-it.json --git.from="$(git rev-list --max-parents=0 HEAD)" --VV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
