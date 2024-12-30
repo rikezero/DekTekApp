@@ -15,8 +15,6 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      VERSION_NAME: ${{ vars.VERSION_NAME }}
     steps:
       # Step 1: Check out repository
       - name: Check out repository
@@ -38,18 +36,23 @@ jobs:
       - name: Generate version and changelog
         id: release-it
         run: |
-          npx release-it --config release-it.config.js > release-it-output.txt
-          VERSION=$(grep -oP 'Version \K[0-9]+\.[0-9]+\.[0-9]+' release-it-output.txt)
-          echo "Extracted version: $VERSION"
-          echo "VERSION_NAME=$VERSION" >> $GITHUB_ENV
+          npx release-it --config release-it.config.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 6: Update VERSION_NAME Repository Variable
+      # Step 5: Fetch the latest tag created by release-it
+      - name: Fetch Latest Tag
+        id: fetch_tag
+        run: |
+          LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "Latest tag: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      # Step 6: Update VERSION_NAME environment variable
       - name: Update VERSION_NAME Variable
         uses: mmoyaferrer/set-github-variable@v1.0.0
         with:
           name: VERSION_NAME
-          value: ${{ env.VERSION_NAME }}
+          value: ${{ env.LATEST_TAG }}
           repository: rikezero/DekTekApp
           token: ${{ secrets.PAT_TOKEN }}
