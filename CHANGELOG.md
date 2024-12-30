@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.7 (2024-12-30)</small>
+
+* chore: testing if odd behaviour was caused by weird syntax ([1584848](https://github.com/rikezero/DekTekApp/commit/1584848))
+
 ## <small>0.2.6 (2024-12-30)</small>
 
 * chore: testing if odd behaviour was caused by weird syntax ([ba8a558](https://github.com/rikezero/DekTekApp/commit/ba8a558))
