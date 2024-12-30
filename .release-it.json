@@ -16,7 +16,52 @@
   },
   "plugins": {
     "@release-it/conventional-changelog": {
-      "config": "./release-config.yaml"
+      "infile": "CHANGELOG.md",
+      "header": "# DekTek Changelog\n\nAll notable changes are listed below.",
+      "preset": {
+        "name": "angular",
+        "types": [
+          {
+            "type": "BREAKING CHANGE",
+            "section": "⚠️ Major Changes"
+          },
+          {
+            "type": "refactor",
+            "section": "⚠️ Major Changes"
+          },
+          {
+            "type": "fix",
+            "section": "🐛 Bug Fixes"
+          },
+          {
+            "type": "hotfix",
+            "section": "🐛 Bug Fixes"
+          },
+          {
+            "type": "feat",
+            "section": "✨ New Features"
+          },
+          {
+            "type": "docs",
+            "section": "🛠️ Miscellaneous"
+          },
+          {
+            "type": "style",
+            "section": "🛠️ Miscellaneous"
+          },
+          {
+            "type": "test",
+            "section": "🛠️ Miscellaneous"
+          },
+          {
+            "type": "chore",
+            "section": "🛠️ Miscellaneous"
+          }
+        ]
+      },
+      "writerOpts": {
+        "commitPartial": "- {{type}}: {{subject}} ({{hash}})"
+      }
     }
   }
 }
