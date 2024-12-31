@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.19 (2024-12-31)</small>
+
+* chore: added debug logs ([011a77b](https://github.com/rikezero/DekTekApp/commit/011a77b))
+
 ## <small>0.2.18 (2024-12-31)</small>
 
 * chore: trying syntax changes ([7eb9532](https://github.com/rikezero/DekTekApp/commit/7eb9532))
