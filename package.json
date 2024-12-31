@@ -1,6 +1,6 @@
 {
   "name": "dektek",
-  "version": "0.2.23",
+  "version": "0.2.24",
   "description": "A Magic The Gathering android app for creating and managing decks lists, managing collections, searching for cards and prices, etc.",
   "main": "index.js",
   "scripts": {
