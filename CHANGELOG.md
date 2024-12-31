@@ -1,3 +1,11 @@
+# DekTek Changelog
+
+All notable changes are listed below.
+
+## <small>0.2.17 (2024-12-31)</small>
+
+* fix: trying syntax changes ([091689f](https://github.com/rikezero/DekTekApp/commit/091689f))
+
 # Changelog
 
 ## <small>0.2.16 (2024-12-31)</small>
