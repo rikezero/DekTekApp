@@ -34,33 +34,26 @@ module.exports = {
                 ]
             },
             writerOpts: {
-                transform: (commit, context) => {
-                    if (commit.pullRequest?.number) {
-                        commit.pullRequestLink = `[PR #${commit.pullRequest.number}](${context.repository}/pull/${commit.pullRequest.number})`;
-                    }
-                    if (commit.hash) {
-                        commit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
-                    }
-                    if (["BREAKING CHANGE", "refactor"].includes(commit.type)) {
-                        commit.section = "Major Changes";
-                    } else if (["fix", "hotfix"].includes(commit.type)) {
-                        commit.section = "Bug Fixes";
-                    } else if (commit.type === "feat") {
-                        commit.section = "New Features";
-                    } else {
-                        commit.section = "Miscellaneous";
-                    }
-                    commit.subject = commit.subject?.trim();
+                finalizeContext: (ctx) => {
+                    const commitGroups = (ctx && ctx.commitGroups ? ctx.commitGroups : [])
+                        .map((group) => {
+                            const INCLUDED_SECTIONS = [
+                                "⚠️ Major Changes",
+                                "🐛 Bug Fixes",
+                                "✨ New Features",
+                                "🛠️ Miscellaneous",
+                            ];
 
-                    return commit;
+                        const commits = group.commits.filter((commit) => {
+                            return INCLUDED_SECTIONS.includes(commit.scope);
+                        });
+
+                        return { ...group, commits };
+                        });
+
+                    return { ...ctx, commitGroups };
                 },
-                groupBy: "section",
-                commitGroupsSort = (a, b) => {
-                    const tags = ["⚠️ Major Changes", "🐛 Bug Fixes", "✨ New Features", "🛠️ Miscellaneous"]
-
-                    return tags.indexOf(a.title) - tags.indexOf(b.title)
-                }
-            }
-        }
-    }
+            },
+        },
+    },
 };
