@@ -4,10 +4,6 @@
 
 * fix: trying syntax changes ([df3b451](https://github.com/rikezero/DekTekApp/commit/df3b451))
 
-# DekTek Changelog
-
-All notable changes are listed below.
-
 ## <small>0.2.15 (2024-12-31)</small>
 
 * fix: trying syntax changes ([2f2e451](https://github.com/rikezero/DekTekApp/commit/2f2e451))

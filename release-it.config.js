@@ -17,6 +17,7 @@ module.exports = {
   plugins: {
     "@release-it/conventional-changelog": {
       infile: "CHANGELOG.md",
+      header: "# DekTek Changelog\n\nAll notable changes are listed below.",
       preset: {
         name: "conventionalcommits",
         types: [

@@ -38,9 +38,6 @@ module.exports = {
 {{> footer}}
   `,
   headerPartial: `
-# DekTek Changelog
-
-All notable changes are listed below.
 `,
   commitPartial: `
 - {{subject}}
