@@ -1,3 +1,9 @@
+# Changelog
+
+## <small>0.2.16 (2024-12-31)</small>
+
+* fix: trying syntax changes ([df3b451](https://github.com/rikezero/DekTekApp/commit/df3b451))
+
 # DekTek Changelog
 
 All notable changes are listed below.
