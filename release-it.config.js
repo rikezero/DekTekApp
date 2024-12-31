@@ -35,21 +35,28 @@ module.exports = {
             },
             writerOpts: {
                 transform: (commit, context) => {
-                    commit.pullRequestLink = `[PR #${commit.pullRequest.number}](${context.repository}/pull/${commit.pullRequest.number})`;
+                    const typeToSectionMap = {
+                        "BREAKING CHANGE": "⚠️ Major Changes",
+                        refactor: "⚠️ Major Changes",
+                        hotfix: "🐛 Bug Fixes",
+                        fix: "🐛 Bug Fixes",
+                        feat: "✨ New Features",
+                        chore: "🛠️ Miscellaneous",
+                        docs: "🛠️ Miscellaneous",
+                        style: "🛠️ Miscellaneous",
+                        test: "🛠️ Miscellaneous",
+                    };
+
+                    commit.section = typeToSectionMap[commit.type] || "Other";
+
+                    if (commit.pullRequest && commit.pullRequest.number) {
+                        commit.pullRequestLink = `[PR #${commit.pullRequest.number}](${context.repository}/pull/${commit.pullRequest.number})`;
                     }
                     if (commit.hash) {
                         commit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
                     }
-                    if (["BREAKING CHANGE", "refactor"].includes(commit.type)) {
-                        commit.section = "⚠️ Major Changes";
-                    } else if (["fix", "hotfix"].includes(commit.type)) {
-                        commit.section = "🐛 Bug Fixes";
-                    } else if (commit.type === "feat") {
-                        commit.section = "✨ New Features";
-                    } else {
-                        commit.section = "🛠️ Miscellaneous";
-                    }
-                    commit.subject = commit.subject?.trim();
+
+                    commit.typeFormatted = commit.type.charAt(0).toUpperCase() + commit.type.slice(1);
 
                     return commit;
                 },
