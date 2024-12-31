@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest --verbose
     steps:
       # Step 1: Check out repository
       - name: Check out repository
