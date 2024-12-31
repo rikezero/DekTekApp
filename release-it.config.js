@@ -16,7 +16,7 @@ module.exports = {
   },
   plugins: {
     "@release-it/conventional-changelog": {
-      strictSemVer: true
+      strictSemVer: true,
       infile: "CHANGELOG.md",
       header: "# DekTek Changelog\n\nAll notable changes are listed below.",
       preset: {
