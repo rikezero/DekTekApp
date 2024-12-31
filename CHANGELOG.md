@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.15 (2024-12-31)</small>
+
+* fix: trying syntax changes ([2f2e451](https://github.com/rikezero/DekTekApp/commit/2f2e451))
+
 ## <small>0.2.14 (2024-12-30)</small>
 
 * fix: trying syntax changes ([b9874f0](https://github.com/rikezero/DekTekApp/commit/b9874f0))
