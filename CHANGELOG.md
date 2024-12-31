@@ -2,6 +2,12 @@
 
 All notable changes are listed below.
 
+## <small>0.2.26 (2024-12-31)</small>
+
+* chore: changed how we format changelog ([fe0a8bdec34039f03f0b2b096b36414527af3042](https://github.com/rikezero/DekTekApp/commit/fe0a8bdec34039f03f0b2b096b36414527af3042))
+* chore: changed how we format changelog ([eb811a29a1712bd9f0d16c216cf2e84600153f30](https://github.com/rikezero/DekTekApp/commit/eb811a29a1712bd9f0d16c216cf2e84600153f30))
+* chore: changed how we format changelog ([18ec968adba76f292a0c7e07146efba05c7a3691](https://github.com/rikezero/DekTekApp/commit/18ec968adba76f292a0c7e07146efba05c7a3691))
+
 ## <small>0.2.21 (2024-12-31)</small>
 
 * chore: set verbose true ([606ff37](https://github.com/rikezero/DekTekApp/commit/606ff37))
