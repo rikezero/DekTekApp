@@ -62,6 +62,7 @@ module.exports = {
 
                     return newCommit;
                 },
+                groupBy: "section",
                 finalizeContext: (ctx) => {
                     const newCtx = { ...ctx };
 
@@ -80,7 +81,7 @@ module.exports = {
                         return { ...group, commits };
                     });
 
-                    return newCtx;
+                    return { newCtx, commitGroups };
                 },
             },
         },
