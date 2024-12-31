@@ -1,4 +1,5 @@
 module.exports = {
+  verbose: true,
   git: {
     requireCleanWorkingDir: true,
     commit: true,
