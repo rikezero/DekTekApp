@@ -74,14 +74,14 @@ module.exports = {
                             "🛠️ Miscellaneous",
                         ];
 
-                        const commits = group.commits.filter((commit) =>
+                        const filteredCommits = group.commits.filter((commit) =>
                             INCLUDED_SECTIONS.includes(commit.section)
                         );
 
-                        return { ...group, commits };
+                        return { ...group, commits: filteredCommits };
                     });
 
-                    return { newCtx, commitGroups };
+                    return { ...newCtx, commitGroups };
                 },
             },
         },
