@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest --verbose
+    runs-on: ubuntu-latest
     steps:
       # Step 1: Check out repository
       - name: Check out repository
@@ -36,7 +36,7 @@ jobs:
       - name: Generate version and changelog
         id: release-it
         run: |
-          npx release-it --config release-it.config.js
+          npx release-it --config release-it.config.js --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
