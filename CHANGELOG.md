@@ -2,6 +2,11 @@
 
 All notable changes are listed below.
 
+## <small>0.2.18 (2024-12-31)</small>
+
+* chore: trying syntax changes ([7eb9532](https://github.com/rikezero/DekTekApp/commit/7eb9532))
+* fix: trying syntax changes ([46230bb](https://github.com/rikezero/DekTekApp/commit/46230bb))
+
 ## <small>0.2.17 (2024-12-31)</small>
 
 * fix: trying syntax changes ([091689f](https://github.com/rikezero/DekTekApp/commit/091689f))
