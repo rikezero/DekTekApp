@@ -23,39 +23,39 @@ module.exports = {
         types: [
           {
             type: "BREAKING CHANGE",
-            section: "⚠️ Major Changes",
+            section: "Major Changes",
           },
           {
             type: "refactor",
-            section: "⚠️ Major Changes",
+            section: "Major Changes",
           },
           {
             type: "fix",
-            section: "🐛 Bug Fixes",
+            section: "Bug Fixes",
           },
           {
             type: "hotfix",
-            section: "🐛 Bug Fixes",
+            section: "Bug Fixes",
           },
           {
             type: "feat",
-            section: "✨ New Features",
+            section: "New Features",
           },
           {
             type: "docs",
-            section: "🛠️ Miscellaneous",
+            section: "Miscellaneous",
           },
           {
             type: "style",
-            section: "🛠️ Miscellaneous",
+            section: "Miscellaneous",
           },
           {
             type: "test",
-            section: "🛠️ Miscellaneous",
+            section: "Miscellaneous",
           },
           {
             type: "chore",
-            section: "🛠️ Miscellaneous",
+            section: "Miscellaneous",
           },
         ],
       },
