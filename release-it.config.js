@@ -38,7 +38,7 @@ module.exports = {
                       const commitGroups = (ctx?.commitGroups || []).map((group) => {
                         const commits = group.commits.filter((commit) => {
                           const INCLUDED_SECTIONS = ['⚠️ Major Changes', '🐛 Bug Fixes', '✨ New Features', '🛠️ Miscellaneous'];
-                          return INCLUDED_SECTIONS.includes(commit.scope);
+                          return INCLUDED_SECTIONS.includes(commit.section);
                         });
 
                         return {
