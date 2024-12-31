@@ -35,6 +35,8 @@ module.exports = {
             },
             writerOpts: {
                 transform: (commit, context) => {
+                    const newCommit = { ...commit };
+
                     const typeToSectionMap = {
                         "BREAKING CHANGE": "⚠️ Major Changes",
                         refactor: "⚠️ Major Changes",
@@ -47,37 +49,38 @@ module.exports = {
                         test: "🛠️ Miscellaneous",
                     };
 
-                    commit.section = typeToSectionMap[commit.type] || "Other";
+                    newCommit.section = typeToSectionMap[commit.type] || "Other";
 
                     if (commit.pullRequest && commit.pullRequest.number) {
-                        commit.pullRequestLink = `[PR #${commit.pullRequest.number}](${context.repository}/pull/${commit.pullRequest.number})`;
+                        newCommit.pullRequestLink = `[PR #${commit.pullRequest.number}](${context.repository}/pull/${commit.pullRequest.number})`;
                     }
                     if (commit.hash) {
-                        commit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
+                        newCommit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
                     }
 
-                    commit.typeFormatted = commit.type.charAt(0).toUpperCase() + commit.type.slice(1);
+                    newCommit.typeFormatted = commit.type.charAt(0).toUpperCase() + commit.type.slice(1);
 
-                    return commit;
+                    return newCommit;
                 },
                 finalizeContext: (ctx) => {
-                    const commitGroups = (ctx && ctx.commitGroups ? ctx.commitGroups : [])
-                        .map((group) => {
-                            const INCLUDED_SECTIONS = [
-                                "⚠️ Major Changes",
-                                "🐛 Bug Fixes",
-                                "✨ New Features",
-                                "🛠️ Miscellaneous",
-                            ];
+                    const newCtx = { ...ctx };
 
-                        const commits = group.commits.filter((commit) => {
-                            return INCLUDED_SECTIONS.includes(commit.scope);
-                        });
+                    newCtx.commitGroups = (ctx.commitGroups || []).map((group) => {
+                        const INCLUDED_SECTIONS = [
+                            "⚠️ Major Changes",
+                            "🐛 Bug Fixes",
+                            "✨ New Features",
+                            "🛠️ Miscellaneous",
+                        ];
+
+                        const commits = group.commits.filter((commit) =>
+                            INCLUDED_SECTIONS.includes(commit.section)
+                        );
 
                         return { ...group, commits };
-                        });
+                    });
 
-                    return { ...ctx, commitGroups };
+                    return newCtx;
                 },
             },
         },
