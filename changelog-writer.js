@@ -16,12 +16,15 @@ module.exports = {
       commit.section = "Miscellaneous";
     }
     commit.subject = commit.subject?.trim();
+    console.log('DEBUG Subject:', commit.subject);
+    console.log('DEBUG Section:', commit.section);
 
     return commit;
   },
   groupBy: "section",
   commitGroupsSort: (a, b) => {
     const order = ["Major Changes", "Bug Fixes", "New Features", "Miscellaneous"];
+    console.log('DEBUG commitGroupSort:', order.indexOf(a.title) - order.indexOf(b.title));
     return order.indexOf(a.title) - order.indexOf(b.title);
   },
   commitsSort: ["scope", "subject"],
@@ -29,7 +32,7 @@ module.exports = {
 {{> header}}
 
 {{#each commitGroups}}
-## {{title}}
+## {{this.title}}
 {{#each commits}}
 {{> commit}}
 {{/each}}
