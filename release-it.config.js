@@ -64,6 +64,7 @@ module.exports = {
                 },
                 groupBy: "section",
                 finalizeContext: (ctx) => {
+
                     const commitGroups = (ctx.commitGroups || []).map((group) => {
                         const INCLUDED_SECTIONS = [
                             "⚠️ Major Changes",
