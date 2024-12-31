@@ -36,7 +36,7 @@ jobs:
       - name: Generate version and changelog
         id: release-it
         run: |
-          npx release-it --config release-it.config.js --verbose
+          npx release-it --config release-it.config.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
