@@ -2,6 +2,8 @@
 
 All notable changes are listed below.
 
+## <small>0.2.25 (2024-12-31)</small>
+
 ## <small>0.2.24 (2024-12-31)</small>
 
 ## <small>0.2.23 (2024-12-31)</small>
