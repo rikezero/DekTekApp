@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## <small>0.2.20 (2024-12-31)</small>
+
+* chore: set verbose true ([ee58a2b](https://github.com/rikezero/DekTekApp/commit/ee58a2b))
+
 ## <small>0.2.19 (2024-12-31)</small>
 
 * chore: added debug logs ([011a77b](https://github.com/rikezero/DekTekApp/commit/011a77b))
