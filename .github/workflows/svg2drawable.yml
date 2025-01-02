@@ -7,46 +7,44 @@ on:
 
 jobs:
   #
-  # 1) Install Python, clone svg2vectordrawable & mtg-vectors, convert SVGs, and upload results
+  # 1) Install Node, clone mtg-vectors, convert SVGs with s2v (svg2vectordrawable), and upload results
   #
   convert-svgs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out this repository (if needed)
+      - name: Check out the current repository (optional)
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          python-version: '3.9'
+          node-version: 16
 
-      # Clone and install svg2vectordrawable from source
-      - name: Clone svg2vectordrawable
-        run: git clone https://github.com/Ashung/svg2vectordrawable.git
-
-      - name: Install svg2vectordrawable locally
+      - name: Install svg2vectordrawable globally
         run: |
-          cd svg2vectordrawable
-          pip install .
+          npm install --global svg2vectordrawable
+          # Confirm it's installed
+          s2v -h
 
       - name: Clone mtg-vectors repository
-        run: |
-          git clone https://github.com/Investigamer/mtg-vectors.git
+        run: git clone https://github.com/Investigamer/mtg-vectors.git
 
-      - name: Convert SVGs to Android XML
+      - name: Convert all SVGs in a folder
         run: |
           INPUT_DIR="mtg-vectors/svg/optimized/set"
           OUTPUT_DIR="converted"
 
           mkdir -p "$OUTPUT_DIR"
 
-          # Loop through all SVG files in the set directory
-          for SVG_FILE in "$INPUT_DIR"/*.svg; do
-            BASENAME=$(basename "$SVG_FILE" .svg | tr '[:upper:]' '[:lower:]')
-            OUTPUT_FILE="$OUTPUT_DIR/ic_set_${BASENAME}.xml"
+          # s2v -f <input_folder> -o <output_folder> converts 
+          # all .svg files in the input folder to .xml in the output folder.
+          s2v -f "$INPUT_DIR" -o "$OUTPUT_DIR"
 
-            # Convert using svg2vectordrawable
-            svg2vectordrawable "$SVG_FILE" "$OUTPUT_FILE"
+          # (Optional) If you want each file to have a prefix (ic_set_...)
+          # rename them after conversion:
+          for XML_FILE in "$OUTPUT_DIR"/*.xml; do
+            BASENAME=$(basename "$XML_FILE" .xml | tr '[:upper:]' '[:lower:]')
+            mv "$XML_FILE" "$OUTPUT_DIR/ic_set_${BASENAME}.xml"
           done
 
       - name: Upload converted vectors
