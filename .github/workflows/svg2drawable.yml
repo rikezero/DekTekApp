@@ -7,7 +7,7 @@ on:
 
 jobs:
   #
-  # 1) Install Python, clone mtg-vectors, convert SVGs with svg2vectordrawable, and upload results
+  # 1) Install Python, clone svg2vectordrawable & mtg-vectors, convert SVGs, and upload results
   #
   convert-svgs:
     runs-on: ubuntu-latest
@@ -20,9 +20,14 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install svg2vectordrawable
+      # Clone and install svg2vectordrawable from source
+      - name: Clone svg2vectordrawable
+        run: git clone https://github.com/Ashung/svg2vectordrawable.git
+
+      - name: Install svg2vectordrawable locally
         run: |
-          pip install svg2vectordrawable
+          cd svg2vectordrawable
+          pip install .
 
       - name: Clone mtg-vectors repository
         run: |
