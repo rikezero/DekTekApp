@@ -7,42 +7,39 @@ on:
 
 jobs:
   #
-  # 1) Setup environment, clone mtg-vectors, convert SVGs, and upload converted files
+  # 1) Install Node.js, clone mtg-vectors, convert SVGs with svg2android, and upload results
   #
   convert-svgs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out this repository
+      - name: Check out the current repo (if needed)
         uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          distribution: temurin
-          java-version: '11'
+          node-version: 16
 
-      - name: Download svg2android JAR
-        run: |
-          curl -L \
-            https://github.com/inloop/svg2android/releases/download/1.0.0/svg2android-1.0.0-jar-with-dependencies.jar \
-            -o svg2android.jar
+      - name: Install svg2android globally
+        run: npm install -g svg2android
 
       - name: Clone mtg-vectors repository
-        run: |
-          git clone https://github.com/Investigamer/mtg-vectors.git
+        run: git clone https://github.com/Investigamer/mtg-vectors.git
 
-      - name: Convert and Rename SVGs
+      - name: Convert SVGs to Android XML
         run: |
           INPUT_DIR="mtg-vectors/svg/optimized/set"
           OUTPUT_DIR="converted"
 
           mkdir -p "$OUTPUT_DIR"
 
-          # Loop through all SVG files, converting them into .xml files
-          find "$INPUT_DIR" -type f -name "*.svg" | while read -r SVG_FILE; do
-            BASE_NAME=$(basename "$SVG_FILE" .svg | tr '[:upper:]' '[:lower:]')
-            OUTPUT_FILE="${OUTPUT_DIR}/ic_set_${BASE_NAME}.xml"
-            java -jar svg2android.jar --input "$SVG_FILE" --output "$OUTPUT_FILE"
+          # Convert all SVGs at once using svg2android:
+          # -i /path/to/svgfiles -o /output/directory
+          svg2android -i "$INPUT_DIR" -o "$OUTPUT_DIR"
+
+          for XML_FILE in "$OUTPUT_DIR"/*.xml; do
+            BASENAME=$(basename "$XML_FILE" .xml | tr '[:upper:]' '[:lower:]')
+            mv "$XML_FILE" "$OUTPUT_DIR/ic_set_${BASENAME}.xml"
           done
 
       - name: Upload converted vectors
@@ -83,11 +80,11 @@ jobs:
         run: |
           RESOURCE_DIR="DekTekApp/app/src/main/res/drawable"
           mkdir -p "$RESOURCE_DIR"
-          
+
           for XML_FILE in converted/*.xml; do
             BASENAME=$(basename "$XML_FILE")
             TARGET_FILE="$RESOURCE_DIR/$BASENAME"
-          
+
             # If target exists, compare; if different, overwrite
             if [ -f "$TARGET_FILE" ]; then
               if ! cmp -s "$XML_FILE" "$TARGET_FILE"; then
@@ -103,10 +100,10 @@ jobs:
           cd DekTekApp
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          
+
           # Capture the current date in dd/mm/YYYY format
           COMMIT_DATE=$(date +%d/%m/%Y)
-          
+
           # Check if there are any changes
           if [ -n "$(git status --porcelain)" ]; then
             git add app/src/main/res/drawable/*.xml
@@ -114,4 +111,3 @@ jobs:
             git push origin main
           else
             echo "No changes to commit."
-          fi
