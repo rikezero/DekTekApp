@@ -57,34 +57,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: convert-svgs
     steps:
-      - name: Download converted vectors
-        uses: actions/download-artifact@v4
-        with:
-          name: converted-vectors
-          path: .
-
-      - name: Debug Artifact Location
-        run: |
-          echo "Listing files in the root directory:"
-          ls -l
-
-      - name: Extract downloaded artifact
-        run: |
-          ZIP_FILE="converted-vectors.zip"
-          TARGET_DIR="converted"
-          
-          if [ -f "$ZIP_FILE" ]; then
-            mkdir -p "$TARGET_DIR"
-            unzip -o "$ZIP_FILE" -d "$TARGET_DIR"
-            echo "Artifact extracted to $TARGET_DIR."
-          else
-            echo "Zip file $ZIP_FILE not found in the root directory. Exiting."
-            exit 1
-          fi
-
-      - name: Set CURRENT_DATE
-        run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
-
       - name: Check out DekTekApp repository
         uses: actions/checkout@v4
         with:
@@ -95,6 +67,20 @@ jobs:
 
       - name: Create a new branch from master
         run: git checkout -b chore/auto-update-vectors
+
+      - name: Download converted vectors
+        uses: actions/download-artifact@v4
+        with:
+          name: converted-vectors
+          path: converted
+
+      - name: Debug Artifact Location
+        run: |
+          echo "Listing files in the root directory:"
+          ls -l converted
+
+      - name: Set CURRENT_DATE
+        run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
 
       - name: Copy converted XML files into Android res/drawable folder
         run: |
