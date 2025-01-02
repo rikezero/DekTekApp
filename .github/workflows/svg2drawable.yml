@@ -61,7 +61,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: converted-vectors
-          path: .
+          path: converted-vectors
       - name: Extract downloaded artifact
         run: |
           ZIP_FILE="converted-vectors.zip"
