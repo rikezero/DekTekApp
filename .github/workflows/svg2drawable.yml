@@ -77,27 +77,29 @@ jobs:
       - name: Create a new branch from master
         run: git checkout -b chore/auto-update-vectors
 
-      - name: Copy converted XML files into DekTekApp
+      - name: Copy converted XML files into Android res/drawable folder
         run: |
-          RESOURCE_DIR="app/src/main/res/drawable"
-          mkdir -p "$RESOURCE_DIR"
+          ARTIFACT_DIR="converted" # Path to the downloaded artifact files
+          TARGET_DIR="app/src/main/res/drawable" # Android drawable folder in the repo
 
-          for XML_FILE in converted/*.xml; do
+          for XML_FILE in "$ARTIFACT_DIR"/*.xml; do
             [ -e "$XML_FILE" ] || continue  # Skip if no files
             BASENAME=$(basename "$XML_FILE")
-            TARGET_FILE="$RESOURCE_DIR/$BASENAME"
+            TARGET_FILE="$TARGET_DIR/$BASENAME"
 
             # Overwrite if file exists and is different
             if [ -f "$TARGET_FILE" ]; then
               if ! cmp -s "$XML_FILE" "$TARGET_FILE"; then
                 cp "$XML_FILE" "$TARGET_FILE"
                 echo "Updated $TARGET_FILE"
+              else
+                echo "$TARGET_FILE is identical. Skipping."
               fi
             else
               cp "$XML_FILE" "$TARGET_FILE"
               echo "Added $TARGET_FILE"
             fi
-          done
+          done      
 
       - name: Verify changes, commit, and push
         run: |
