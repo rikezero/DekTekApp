@@ -1,40 +1,38 @@
-name: Convert SVG to Android XML
+name: Convert SVG to Android XML and Create PR
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 1,16 * *'
+    - cron: '0 0 1,16 * *'  # Runs on the 1st and 16th of every month at midnight UTC
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  #
-  # 1) Convert SVGs with s2v (svg2vectordrawable), upload as artifact
-  #
   convert-svgs:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Node
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: '16'
 
       - name: Install svg2vectordrawable globally
         run: |
           npm install --global svg2vectordrawable
-          s2v -h
+          s2v -h  # Verify installation
 
       - name: Clone mtg-vectors repository
         run: git clone https://github.com/Investigamer/mtg-vectors.git
 
-      - name: Convert SVGs (recursively) to XML
+      - name: Convert SVGs to XML
         run: |
           INPUT_DIR="mtg-vectors/svg/optimized/set"
           OUTPUT_DIR="converted"
           mkdir -p "$OUTPUT_DIR"
 
+          # Check if SVG files exist
           if ! find "$INPUT_DIR" -type f -name "*.svg" | grep -q .; then
             echo "No SVG files found under $INPUT_DIR. Exiting gracefully."
             exit 0
@@ -55,59 +53,67 @@ jobs:
           name: converted-vectors
           path: converted
 
-  #
-  # 2) Clone DekTekApp, copy changes, create a PR using actions/create-pull-request
-  #
   update-dektek-resources:
     runs-on: ubuntu-latest
-    needs: [convert-svgs]
+    needs: convert-svgs
     steps:
-      - name: Download converted files
+      - name: Download converted vectors
         uses: actions/download-artifact@v4
         with:
           name: converted-vectors
           path: converted
 
+      - name: Set CURRENT_DATE
+        run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
+
       - name: Check out DekTekApp repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: rikezero/DekTekApp
           ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - name: Copy new/updated XML files into resources
+      - name: Copy converted XML files into DekTekApp
         run: |
-          RESOURCE_DIR="DekTekApp/app/src/main/res/drawable"
+          RESOURCE_DIR="app/src/main/res/drawable"
           mkdir -p "$RESOURCE_DIR"
 
           for XML_FILE in converted/*.xml; do
-            [ -e "$XML_FILE" ] || continue
+            [ -e "$XML_FILE" ] || continue  # Skip if no files
             BASENAME=$(basename "$XML_FILE")
             TARGET_FILE="$RESOURCE_DIR/$BASENAME"
 
-            # If target exists, compare; if different, overwrite
+            # Overwrite if file exists and is different
             if [ -f "$TARGET_FILE" ]; then
               if ! cmp -s "$XML_FILE" "$TARGET_FILE"; then
                 cp "$XML_FILE" "$TARGET_FILE"
+                echo "Updated $TARGET_FILE"
               fi
             else
               cp "$XML_FILE" "$TARGET_FILE"
+              echo "Added $TARGET_FILE"
             fi
           done
+
+      - name: Verify changes
+        run: git status
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: chore/auto-update-vectors
-          base: master
-          title: 'chore: update set vectors'
-          body: This PR updates the set vector assets in the app/src/main/res/drawable folder.
-          labels: |
-            automerge
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: |
-            chore: update sets vector assets as of $CURRENT_DATE
-          committer: GitHub Actions <actions@github.com>
-          author: GitHub Actions <actions@github.com>
+          commit-message: "chore: update sets vector assets as of ${{ env.CURRENT_DATE }}"
+          committer: 'GitHub Actions <actions@github.com>'
+          author: 'GitHub Actions <actions@github.com>'
+          branch: 'chore/auto-update-vectors'
+          base: 'master'  # Change to 'main' if applicable
+          title: 'chore: update set vectors'
+          body: |
+            This PR updates the set vector assets in the app/src/main/res/drawable folder.
+          labels: 'automerge'
           delete-branch: true
           draft: false
           signoff: false
+          sign-commits: false
+          maintainer-can-modify: true
