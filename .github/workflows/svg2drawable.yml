@@ -46,7 +46,7 @@ jobs:
           done
 
       - name: Upload converted vectors
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: converted-vectors
           path: converted
@@ -59,7 +59,7 @@ jobs:
     needs: [convert-svgs]
     steps:
       - name: Download converted files
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: converted-vectors
           path: converted
@@ -93,14 +93,17 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: 'chore/auto-update-vectors'
-          base: 'master'
+          branch: chore/auto-update-vectors
+          base: master
           title: 'chore: update set vectors'
-          body: 'This PR updates the set vector assets in the app/src/main/res/drawable folder.'
-          labels: 'automerge'
+          body: This PR updates the set vector assets in the app/src/main/res/drawable folder.
+          labels: |
+            automerge
           token: ${{ secrets.PAT_TOKEN }}
-          commit-message: 'chore: update sets vector assets as of $CURRENT_DATE'
-          committer: 'GitHub Actions <actions@github.com>'
-          author: 'GitHub Actions <actions@github.com>'
+          commit-message: |
+            chore: update sets vector assets as of $CURRENT_DATE
+          committer: GitHub Actions <actions@github.com>
+          author: GitHub Actions <actions@github.com>
           delete-branch: true
+          draft: false
           signoff: false
