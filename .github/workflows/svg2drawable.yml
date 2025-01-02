@@ -70,7 +70,7 @@ jobs:
         with:
           repository: rikezero/DekTekApp
           token: ${{ secrets.GITHUB_TOKEN }}  # or a PAT with 'repo' scope
-          ref: main  # checkout the main branch by default
+          ref: master
           path: DekTekApp
 
       - name: Copy new/updated XML files into resources
