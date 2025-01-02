@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '0 0 1,16 * *'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   #
   # 1) Convert SVGs with s2v (svg2vectordrawable), upload as artifact
@@ -99,7 +103,7 @@ jobs:
           body: This PR updates the set vector assets in the app/src/main/res/drawable folder.
           labels: |
             automerge
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
             chore: update sets vector assets as of $CURRENT_DATE
           committer: GitHub Actions <actions@github.com>
