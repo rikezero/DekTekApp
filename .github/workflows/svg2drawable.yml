@@ -78,10 +78,11 @@ jobs:
         run: git checkout -b chore/auto-update-vectors
 
       - name: Copy converted XML files into Android res/drawable folder
-        uses: canastro/copy-action@master
-        with:
-          source: converted/*.xml
-          target: app/src/main/res/drawable
+        run: |
+          ARTIFACT_DIR="converted"
+          TARGET_DIR="app/src/main/res/drawable"          
+          cp -r "$ARTIFACT_DIR"/*.xml "$TARGET_DIR"
+          echo "All files copied to $TARGET_DIR, overwriting if necessary."
 
       - name: Verify changes, commit, and push
         run: |
