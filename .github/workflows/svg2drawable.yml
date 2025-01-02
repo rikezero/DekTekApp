@@ -112,16 +112,15 @@ jobs:
           fi     
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: devops-infra/action-pull-request@v0.5.5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: 'master'
-          title: 'chore: update set vectors'
-          body: |
-            This PR updates the set vector assets in the app/src/main/res/drawable folder.
-          labels: 'automerge'
-          delete-branch: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: chore/auto-update-vectors
+          target_branch: master
+          title: "feat: auto update vectors"
+          body: "**Automated pull request**"
+          label: automerge
           draft: false
-          signoff: false
-          sign-commits: false
-          maintainer-can-modify: true
+          get_diff: true
+          ignore_users: "dependabot"
+          allow_no_diff: false
