@@ -74,6 +74,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Create a new branch from master
+        run: git checkout -b chore/auto-update-vectors
+
       - name: Copy converted XML files into DekTekApp
         run: |
           RESOURCE_DIR="app/src/main/res/drawable"
@@ -96,18 +99,23 @@ jobs:
             fi
           done
 
-      - name: Verify changes
-        run: git status
+      - name: Verify changes, commit, and push
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          if git diff --quiet; then
+          echo "No changes to commit."
+          else
+          git add .
+          git commit -m "chore: auto-update vectors"
+          git push origin chore/auto-update-vectors
+          fi     
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update sets vector assets as of ${{ env.CURRENT_DATE }}"
-          committer: 'GitHub Actions <actions@github.com>'
-          author: 'GitHub Actions <actions@github.com>'
-          branch: 'chore/auto-update-vectors'
-          base: 'master'  # Change to 'main' if applicable
+          base: 'master'
           title: 'chore: update set vectors'
           body: |
             This PR updates the set vector assets in the app/src/main/res/drawable folder.
