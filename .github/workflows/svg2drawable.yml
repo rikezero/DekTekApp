@@ -7,24 +7,26 @@ on:
 
 jobs:
   #
-  # 1) Install Node.js, clone mtg-vectors, convert SVGs with svg2android, and upload results
+  # 1) Install Python, clone mtg-vectors, convert SVGs with svg2vectordrawable, and upload results
   #
   convert-svgs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the current repo (if needed)
+      - name: Check out this repository (if needed)
         uses: actions/checkout@v3
 
-      - name: Set up Node
-        uses: actions/setup-node@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          node-version: 16
+          python-version: '3.9'
 
-      - name: Install svg2android globally
-        run: npm install -g svg2android
+      - name: Install svg2vectordrawable
+        run: |
+          pip install svg2vectordrawable
 
       - name: Clone mtg-vectors repository
-        run: git clone https://github.com/Investigamer/mtg-vectors.git
+        run: |
+          git clone https://github.com/Investigamer/mtg-vectors.git
 
       - name: Convert SVGs to Android XML
         run: |
@@ -33,13 +35,13 @@ jobs:
 
           mkdir -p "$OUTPUT_DIR"
 
-          # Convert all SVGs at once using svg2android:
-          # -i /path/to/svgfiles -o /output/directory
-          svg2android -i "$INPUT_DIR" -o "$OUTPUT_DIR"
+          # Loop through all SVG files in the set directory
+          for SVG_FILE in "$INPUT_DIR"/*.svg; do
+            BASENAME=$(basename "$SVG_FILE" .svg | tr '[:upper:]' '[:lower:]')
+            OUTPUT_FILE="$OUTPUT_DIR/ic_set_${BASENAME}.xml"
 
-          for XML_FILE in "$OUTPUT_DIR"/*.xml; do
-            BASENAME=$(basename "$XML_FILE" .xml | tr '[:upper:]' '[:lower:]')
-            mv "$XML_FILE" "$OUTPUT_DIR/ic_set_${BASENAME}.xml"
+            # Convert using svg2vectordrawable
+            svg2vectordrawable "$SVG_FILE" "$OUTPUT_FILE"
           done
 
       - name: Upload converted vectors
