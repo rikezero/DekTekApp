@@ -64,7 +64,6 @@ jobs:
           name: converted-vectors
           path: converted
 
-      # This checks out your DekTekApp repo into the current working directory
       - name: Check out DekTekApp repository
         uses: actions/checkout@v3
         with:
@@ -96,7 +95,6 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          # The branch name that will be created for the PR
           branch: 'chore/auto-update-vectors'
           base: 'master'
           title: 'chore: update set vectors'
