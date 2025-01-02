@@ -65,12 +65,10 @@ jobs:
           path: converted
 
       - name: Check out DekTekApp repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          repository: rikezero/DekTekApp
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: master
-          path: DekTekApp
 
       - name: Copy new/updated XML files into resources
         run: |
