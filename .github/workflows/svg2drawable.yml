@@ -61,16 +61,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: converted-vectors
-          path: converted
-
+          path: .
       - name: Extract downloaded artifact
         run: |
-          ARTIFACT_DIR="converted"
-          if [ -f "$ARTIFACT_DIR.zip" ]; then
-            unzip -o "$ARTIFACT_DIR.zip" -d "$ARTIFACT_DIR"
-            echo "Artifact extracted to $ARTIFACT_DIR."
+          ZIP_FILE="converted-vectors.zip"
+          TARGET_DIR="converted"
+          
+          if [ -f "$ZIP_FILE" ]; then
+            mkdir -p "$TARGET_DIR"
+            unzip -o "$ZIP_FILE" -d "$TARGET_DIR"
+            echo "Artifact extracted to $TARGET_DIR."
           else
-            echo "No zip file found to extract."
+            echo "Zip file $ZIP_FILE not found."
+            exit 1
           fi
 
       - name: Set CURRENT_DATE
