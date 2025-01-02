@@ -61,7 +61,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: converted-vectors
-          path: converted-vectors
+          path: .
+
+      - name: Debug Artifact Location
+        run: |
+          echo "Listing files in the root directory:"
+          ls -l
+
       - name: Extract downloaded artifact
         run: |
           ZIP_FILE="converted-vectors.zip"
@@ -72,7 +78,7 @@ jobs:
             unzip -o "$ZIP_FILE" -d "$TARGET_DIR"
             echo "Artifact extracted to $TARGET_DIR."
           else
-            echo "Zip file $ZIP_FILE not found."
+            echo "Zip file $ZIP_FILE not found in the root directory. Exiting."
             exit 1
           fi
 
