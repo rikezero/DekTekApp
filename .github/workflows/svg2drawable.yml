@@ -7,8 +7,9 @@ on:
 
 jobs:
   #
-  # 1) Setup environment & prepare svg2android JAR
-  setup-environment:
+  # 1) Setup environment, clone mtg-vectors, convert SVGs, and upload converted files
+  #
+  convert-svgs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out this repository
@@ -26,45 +27,21 @@ jobs:
             https://github.com/inloop/svg2android/releases/download/1.0.0/svg2android-1.0.0-jar-with-dependencies.jar \
             -o svg2android.jar
 
-      - name: Upload JAR as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: svg2android-jar
-          path: svg2android.jar
-
-  #
-  # 2) Clone the SVG repository, convert all SVGs, and upload them
-  convert-svgs:
-    runs-on: ubuntu-latest
-    needs: [setup-environment]
-    steps:
-      - name: Download JAR artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: svg2android-jar
-
       - name: Clone mtg-vectors repository
         run: |
           git clone https://github.com/Investigamer/mtg-vectors.git
 
       - name: Convert and Rename SVGs
         run: |
-          # Define paths
           INPUT_DIR="mtg-vectors/svg/optimized/set"
           OUTPUT_DIR="converted"
 
-          # Create output directory
           mkdir -p "$OUTPUT_DIR"
 
           # Loop through all SVG files, converting them into .xml files
           find "$INPUT_DIR" -type f -name "*.svg" | while read -r SVG_FILE; do
-            # Extract the base filename (lowercase)
             BASE_NAME=$(basename "$SVG_FILE" .svg | tr '[:upper:]' '[:lower:]')
-
-            # Output filename with the desired prefix
             OUTPUT_FILE="${OUTPUT_DIR}/ic_set_${BASE_NAME}.xml"
-
-            # Convert with the downloaded jar
             java -jar svg2android.jar --input "$SVG_FILE" --output "$OUTPUT_FILE"
           done
 
@@ -75,7 +52,8 @@ jobs:
           path: converted
 
   #
-  # 3) Check out DekTekApp via SSH, update resources, commit, and push
+  # 2) Check out DekTekApp via SSH, update resources, commit, and push
+  #
   update-dektek-resources:
     runs-on: ubuntu-latest
     needs: [convert-svgs]
