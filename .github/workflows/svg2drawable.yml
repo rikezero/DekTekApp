@@ -72,22 +72,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: converted-vectors
-          path: converted
-
-      - name: Debug Artifact Location
-        run: |
-          echo "Listing files in the root directory:"
-          ls -l converted
+          path: app/src/main/res/drawable
 
       - name: Set CURRENT_DATE
         run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
-
-      - name: Copy converted XML files into Android res/drawable folder
-        run: |
-          ARTIFACT_DIR="converted"
-          TARGET_DIR="app/src/main/res/drawable"          
-          cp -r "$ARTIFACT_DIR"/*.xml "$TARGET_DIR"
-          echo "All files copied to $TARGET_DIR, overwriting if necessary."
 
       - name: Verify changes, commit, and push
         run: |
