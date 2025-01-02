@@ -7,14 +7,11 @@ on:
 
 jobs:
   #
-  # 1) Install Node, clone mtg-vectors, convert SVGs with s2v (svg2vectordrawable), and upload results
+  # 1) Install Node, clone mtg-vectors, recursively find & convert SVGs with s2v, upload results
   #
   convert-svgs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the current repository (optional)
-        uses: actions/checkout@v3
-
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
@@ -23,28 +20,37 @@ jobs:
       - name: Install svg2vectordrawable globally
         run: |
           npm install --global svg2vectordrawable
-          # Confirm it's installed
           s2v -h
 
       - name: Clone mtg-vectors repository
         run: git clone https://github.com/Investigamer/mtg-vectors.git
 
-      - name: Convert all SVGs in a folder
+      - name: Convert SVGs (recursively) to XML
         run: |
           INPUT_DIR="mtg-vectors/svg/optimized/set"
           OUTPUT_DIR="converted"
-
           mkdir -p "$OUTPUT_DIR"
 
-          # s2v -f <input_folder> -o <output_folder> converts 
-          # all .svg files in the input folder to .xml in the output folder.
-          s2v -f "$INPUT_DIR" -o "$OUTPUT_DIR"
+          # Check if at least one *.svg exists under INPUT_DIR
+          if ! find "$INPUT_DIR" -type f -name "*.svg" | grep -q .; then
+            echo "No SVG files found under $INPUT_DIR (including subfolders)."
+            exit 0  # Exit gracefully, no SVGs to process
+          fi
 
-          # (Optional) If you want each file to have a prefix (ic_set_...)
-          # rename them after conversion:
-          for XML_FILE in "$OUTPUT_DIR"/*.xml; do
-            BASENAME=$(basename "$XML_FILE" .xml | tr '[:upper:]' '[:lower:]')
-            mv "$XML_FILE" "$OUTPUT_DIR/ic_set_${BASENAME}.xml"
+          echo "Converting all SVGs found under $INPUT_DIR ..."
+
+          # Recursively find all .svg files, convert each separately
+          find "$INPUT_DIR" -type f -name "*.svg" | while read -r SVG_FILE; do
+            # Extract the folder name
+            FOLDER_NAME=$(basename "$(dirname "$SVG_FILE")" | tr '[:upper:]' '[:lower:]')
+            # Extract the base file name
+            BASE_NAME=$(basename "$SVG_FILE" .svg | tr '[:upper:]' '[:lower:]')
+
+            # Combine folder name + base name into the output file name
+            OUTPUT_FILE="$OUTPUT_DIR/ic_set_${FOLDER_NAME}_${BASE_NAME}.xml"
+
+            # Use s2v for conversion:
+            s2v -i "$SVG_FILE" -o "$OUTPUT_FILE"
           done
 
       - name: Upload converted vectors
@@ -87,6 +93,8 @@ jobs:
           mkdir -p "$RESOURCE_DIR"
 
           for XML_FILE in converted/*.xml; do
+            [ -e "$XML_FILE" ] || continue
+
             BASENAME=$(basename "$XML_FILE")
             TARGET_FILE="$RESOURCE_DIR/$BASENAME"
 
