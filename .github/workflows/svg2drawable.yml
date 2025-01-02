@@ -63,6 +63,16 @@ jobs:
           name: converted-vectors
           path: converted
 
+      - name: Extract downloaded artifact
+        run: |
+          ARTIFACT_DIR="converted"
+          if [ -f "$ARTIFACT_DIR.zip" ]; then
+            unzip -o "$ARTIFACT_DIR.zip" -d "$ARTIFACT_DIR"
+            echo "Artifact extracted to $ARTIFACT_DIR."
+          else
+            echo "No zip file found to extract."
+          fi
+
       - name: Set CURRENT_DATE
         run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
 
