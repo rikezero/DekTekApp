@@ -2,6 +2,11 @@
 
 All notable changes are listed below.
 
+## 0.5.0 (2025-01-03)
+
+* chore: auto-update vectors ([e7c4b52d382b423133a773a9c718f5ce8414bb2f](https://github.com/rikezero/DekTekApp/commit/e7c4b52d382b423133a773a9c718f5ce8414bb2f))
+* chore: rewrite automerge triggers for better readability ([8567b59bdc546664772da94762097e0bf6d364af](https://github.com/rikezero/DekTekApp/commit/8567b59bdc546664772da94762097e0bf6d364af))
+
 ## 0.4.0 (2025-01-03)
 
 * fix: arguments syntax ([4a0da33a5ab65d8c337396ca1578d348779810df](https://github.com/rikezero/DekTekApp/commit/4a0da33a5ab65d8c337396ca1578d348779810df))
