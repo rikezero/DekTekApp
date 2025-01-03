@@ -91,13 +91,13 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          if git diff --quiet; then
+          git add -A  # Add all changes, including untracked files
+          if git diff --cached --quiet; then
           echo "No changes to commit."
           else
-          git add .
           git commit -m "chore: auto-update vectors"
           git push origin chore/auto-update-vectors
-          fi     
+          fi   
 
       - name: Create Pull Request
         uses: devops-infra/action-pull-request@v0.5.5
