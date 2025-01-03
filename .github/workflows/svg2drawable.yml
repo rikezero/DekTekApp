@@ -74,6 +74,16 @@ jobs:
           name: converted-vectors
           path: app/src/main/res/drawable
 
+      - name: Verify Downloaded Files
+        run: |
+          echo "Contents of app/src/main/res/drawable:"
+          ls -l app/src/main/res/drawable
+
+      - name: Debug Git Status
+        run: |
+          git status
+          git diff
+
       - name: Set CURRENT_DATE
         run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
 
