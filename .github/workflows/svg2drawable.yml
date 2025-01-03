@@ -109,6 +109,6 @@ jobs:
           body: "**Automated pull request**"
           label: automerge
           draft: false
-          get_diff: true
+          get_diff: false
           ignore_users: "dependabot"
           allow_no_diff: false
