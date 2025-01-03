@@ -13,8 +13,6 @@ on:
 
   workflow_dispatch:
 
-
-
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
