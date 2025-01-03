@@ -58,7 +58,9 @@ module.exports = {
                         newCommit.commitLink = `[${commit.hash.substring(0, 7)}](${context.repository}/commit/${commit.hash})`;
                     }
 
-                    newCommit.typeFormatted = commit.type.charAt(0).toUpperCase() + commit.type.slice(1);
+                    newCommit.typeFormatted = commit.type
+                            ? commit.type.charAt(0).toUpperCase() + commit.type.slice(1)
+                            : "Other";
 
                     return newCommit;
                 },
