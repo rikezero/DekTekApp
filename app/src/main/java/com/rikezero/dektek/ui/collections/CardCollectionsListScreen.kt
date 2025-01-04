@@ -5,9 +5,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.rikezero.dektek.ui.foundation.screen.ScreenComposable
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CardCollectionsListScreen(
+    viewModel: CardCollectionListViewModel = koinViewModel(),
     modifier: Modifier = Modifier
 ) {
     ScreenComposable(
