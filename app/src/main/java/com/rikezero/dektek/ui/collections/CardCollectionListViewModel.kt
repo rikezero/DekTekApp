@@ -1,5 +1,7 @@
 package com.rikezero.dektek.ui.collections
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rikezero.dektek.domain.base.ViewModelState
@@ -20,11 +22,19 @@ class CardCollectionListViewModel(
     val dispatcher: CoroutineDispatcher
 ): ViewModel() {
 
-    private val _cardCollectionsListState: MutableStateFlow<ViewModelState<List<CardCollectionModel>>> = MutableStateFlow(ViewModelState.Loading)
-    val cardCollectionsListState: StateFlow<ViewModelState<List<CardCollectionModel>>> = _cardCollectionsListState.asStateFlow()
+    private val _cardCollectionsListState: MutableList<CardCollectionModel> = mutableStateListOf()
+    val cardCollectionsListState: List<CardCollectionModel> get() = _cardCollectionsListState
 
     private val _searchCardState: MutableStateFlow<ViewModelState<CardListModel>> = MutableStateFlow(ViewModelState.Loading)
     val searchCardState: StateFlow<ViewModelState<CardListModel>> = _searchCardState.asStateFlow()
+
+    fun createCollection(collectionName: String){
+        _cardCollectionsListState.add(CardCollectionModel(collectionName = collectionName))
+    }
+
+    fun deleteCollection(){
+        //todo implement deletion logic, probably tied to an UUID
+    }
 
     fun searchCard(
         cardName: String? = null,

@@ -7,5 +7,6 @@ import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class CardCollectionModel(
+    val collectionName: String,
     val cards: @RawValue MutableMap<CardModel, Int> = mutableMapOf()
 ): Parcelable
