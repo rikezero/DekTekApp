@@ -1,75 +1,114 @@
-name: Convert SVG to Android XML
+name: Convert SVG to Android XML and Create PR
 
 on:
-  # Manual trigger
   workflow_dispatch:
-  # Scheduled trigger on the 1st and 16th of every month.
   schedule:
-    - cron: '0 0 1,16 * *'
+    - cron: '0 0 1,16 * *'  # Runs on the 1st and 16th of every month at midnight UTC
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  # 1) Setup environment & download svg2android JAR
-  setup-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-
-      - name: Download svg2android JAR
-        run: |
-          curl -L \
-            https://github.com/inloop/svg2android/releases/download/1.0.0/svg2android-1.0.0-jar-with-dependencies.jar \
-            -o svg2android.jar
-
-      - name: Upload JAR as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: svg2android-jar
-          path: svg2android.jar
-
-  # 2) Clone mtg-vectors & convert all SVGs with a prefix
   convert-svgs:
     runs-on: ubuntu-latest
-    needs: [setup-environment]
     steps:
-      - name: Download JAR artifact
-        uses: actions/download-artifact@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          name: svg2android-jar
+          node-version: '16'
+
+      - name: Install svg2vectordrawable globally
+        run: |
+          npm install --global svg2vectordrawable
+          s2v -h  # Verify installation
 
       - name: Clone mtg-vectors repository
         run: git clone https://github.com/Investigamer/mtg-vectors.git
 
-      - name: Convert and Rename SVGs
+      - name: Convert SVGs to XML
         run: |
-          # Define paths
           INPUT_DIR="mtg-vectors/svg/optimized/set"
           OUTPUT_DIR="converted"
+          mkdir -p "$OUTPUT_DIR"
 
-          # Create output directory
-          mkdir -p $OUTPUT_DIR
+          # Check if SVG files exist
+          if ! find "$INPUT_DIR" -type f -name "*.svg" | grep -q .; then
+            echo "No SVG files found under $INPUT_DIR. Exiting gracefully."
+            exit 0
+          fi
 
-          # Loop through all SVG files and convert them
-          find $INPUT_DIR -type f -name "*.svg" | while read -r SVG_FILE; do
-            # Extract the base filename without extension, convert to lowercase
+          echo "Converting all SVGs found under $INPUT_DIR ..."
+          find "$INPUT_DIR" -type f -name "*.svg" | while read -r SVG_FILE; do
+            FOLDER_NAME=$(basename "$(dirname "$SVG_FILE")" | tr '[:upper:]' '[:lower:]')
             BASE_NAME=$(basename "$SVG_FILE" .svg | tr '[:upper:]' '[:lower:]')
+            OUTPUT_FILE="$OUTPUT_DIR/ic_set_${FOLDER_NAME}_${BASE_NAME}.xml"
 
-            # Define the new filename with the prefix
-            OUTPUT_FILE="${OUTPUT_DIR}/ic_set_${BASE_NAME}.xml"
-
-            # Run the conversion
-            java -jar svg2android.jar --input "$SVG_FILE" --output "$OUTPUT_FILE"
+            s2v -i "$SVG_FILE" -o "$OUTPUT_FILE"
           done
 
-      # Optionally, upload the converted files as artifacts
       - name: Upload converted vectors
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: converted-vectors
           path: converted
+
+  update-dektek-resources:
+    runs-on: ubuntu-latest
+    needs: convert-svgs
+    steps:
+      - name: Check out DekTekApp repository
+        uses: actions/checkout@v4
+        with:
+          repository: rikezero/DekTekApp
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Create a new branch from master
+        run: git checkout -b chore/auto-update-vectors
+
+      - name: Download converted vectors
+        uses: actions/download-artifact@v4
+        with:
+          name: converted-vectors
+          path: app/src/main/res/drawable
+
+      - name: Verify Downloaded Files
+        run: |
+          echo "Contents of app/src/main/res/drawable:"
+          ls -l app/src/main/res/drawable
+
+      - name: Debug Git Status
+        run: |
+          git status
+          git diff
+
+      - name: Set CURRENT_DATE
+        run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
+
+      - name: Verify changes, commit, and push
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add -A  # Add all changes, including untracked files
+          if git diff --cached --quiet; then
+          echo "No changes to commit."
+          else
+          git commit -m "chore: auto-update vectors"
+          git push origin chore/auto-update-vectors
+          fi   
+
+      - name: Create Pull Request
+        uses: devops-infra/action-pull-request@v0.5.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: chore/auto-update-vectors
+          target_branch: master
+          title: "feat: auto update vectors"
+          body: "**Automated pull request**"
+          label: automerge
+          draft: false
+          get_diff: false
+          ignore_users: "dependabot"
+          allow_no_diff: false

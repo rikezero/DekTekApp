@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="600dp"
+    android:height="751dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M300 751.83L0 301.84 300 0l300 301.84Z"/>
+    <path
+        android:pathData="M300 43.98L39.79 305.73 300 696.05l260.19-390.32Zm0 596.49l-52.37-242.73-152.34-84.08 152.34-14.24L300 82.02l52.35 217.4 152.26 14.24-152.26 84.08z"/>
+</vector>
