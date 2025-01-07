@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.DrawerDefaults
+import androidx.compose.material.FabPosition
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -43,6 +44,9 @@ fun ScreenComposable(
     drawerElevation: Dp = DrawerDefaults.Elevation,
     drawerGesturesEnabled: Boolean = true,
     enableSystemBarsPadding: Boolean = true,
+    floatingActionButton: @Composable () -> Unit = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
+    isFloatingActionButtonDocked: Boolean = false,
     content: @Composable (PaddingValues) -> Unit
 ){
     val scaffoldChild = @Composable { childModifier: Modifier ->
@@ -60,6 +64,9 @@ fun ScreenComposable(
             drawerElevation = drawerElevation,
             drawerShape = drawerShape,
             drawerGesturesEnabled = drawerGesturesEnabled,
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
+            isFloatingActionButtonDocked = isFloatingActionButtonDocked,
             content = content
         )
     }
