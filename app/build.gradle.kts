@@ -71,6 +71,8 @@ dependencies {
     // Optional Compose libraries
     implementation(libs.compose.foundation)
     implementation(libs.compose.runtime.livedata)
+    implementation(libs.compose.material.icons)
+    implementation(libs.compose.material.icons.extended)
 
     // AndroidX Activity integration
     implementation(libs.activity.compose)
