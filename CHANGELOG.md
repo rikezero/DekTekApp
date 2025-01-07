@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## 0.6.0 (2025-01-07)
+
+* feat: adds an input field with state handling, configured theme, ready for use, aiming to improve reusability ([c44d6897d26b18019ae61b926ed9270342087b45](https://github.com/rikezero/DekTekApp/commit/c44d6897d26b18019ae61b926ed9270342087b45))
+
 ## 0.5.0 (2025-01-03)
 
 * chore: auto-update vectors ([e7c4b52d382b423133a773a9c718f5ce8414bb2f](https://github.com/rikezero/DekTekApp/commit/e7c4b52d382b423133a773a9c718f5ce8414bb2f))
