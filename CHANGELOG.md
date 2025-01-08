@@ -2,6 +2,11 @@
 
 All notable changes are listed below.
 
+## 0.7.0 (2025-01-08)
+
+* feat: adds an input field with state handling, configured theme, ready for use, aiming to improve reusability ([c44d6897d26b18019ae61b926ed9270342087b45](https://github.com/rikezero/DekTekApp/commit/c44d6897d26b18019ae61b926ed9270342087b45))
+* feat: creates a button composable with different styles, loading and configured colors ([3c09e8e94808198b238119a66db164eca4fda7c0](https://github.com/rikezero/DekTekApp/commit/3c09e8e94808198b238119a66db164eca4fda7c0))
+
 ## 0.6.0 (2025-01-07)
 
 * feat: adds an input field with state handling, configured theme, ready for use, aiming to improve reusability ([c44d6897d26b18019ae61b926ed9270342087b45](https://github.com/rikezero/DekTekApp/commit/c44d6897d26b18019ae61b926ed9270342087b45))
