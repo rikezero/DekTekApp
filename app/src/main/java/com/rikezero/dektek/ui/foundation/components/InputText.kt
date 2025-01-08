@@ -77,7 +77,7 @@ fun InputText(
                     onValueChange(if (it.text.length > maxLength) it.copy(text = it.text.take(maxLength)) else it)
                 },
                 modifier = Modifier
-                    .defaultMinSize(minWidth = TextFieldDefaults.MinWidth)
+                    .fillMaxWidth()
                     .thenIf(
                         condition = fixedHeight,
                         ifTrue = { height(defaultHeight.dp) },
