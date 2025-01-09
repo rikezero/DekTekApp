@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 val Primary = Color(0xFF4c956c)  // Sea Green for primary action elements
 val Secondary = Color(0xFF3e92cc)  // Celestial Blue for secondary accents
 val Background = Color(0xFFfcfcfc)  // White for light mode
-val Surface = Color(0xFFfcfcfc)  // Light surface
+val Surface = Color(0xBDBDBDC2)  // Light surface
 
 // On Colors
 val OnPrimary = Color(0xFFfcfcfc)  // White text on primary
@@ -15,11 +15,11 @@ val OnBackground = Color(0xFF555358)  // Davy's Gray for light background text
 val OnSurface = Color(0xFF555358)  // Davy's Gray for light surface text
 
 // Error Colors
-val Error500 = Color(0xFFf8333c)  // Imperial Red for error states
-val Error400 = Color(0xFFe80814)  // Imperial Red for error states
-val Error300 = Color(0xFFae060f)  // Imperial Red for error states
-val Error200 = Color(0xFF74040a)  // Imperial Red for error states
-val Error100 = Color(0xFF3a0205)  // Imperial Red for error states
+val Error500 = Color(0xFF3a0205)
+val Error400 = Color(0xFF8D0810)
+val Error300 = Color(0xFFB11B24)
+val Error200 = Color(0xFFCB4249)
+val Error100 = Color(0xFFEEB9B9)
 val OnError = Color(0xFFfcfcfc)  // White text on error messages
 
 // Success Colors
@@ -32,7 +32,7 @@ val OnSuccess = Color(0xFF4c956c)  // Sea Green text on success messages
 
 // White Shades
 val White = Color.White
-val White500 = Color(0xFFfcfcfc)
+val White500 = Color(0xFFD5D5D5)
 val White400 = Color(0xFFcacaca)
 val White300 = Color(0xFF979797)
 val White200 = Color(0xFF656565)

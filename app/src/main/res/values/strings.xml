@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">DekTek</string>
+    <string name="collection_card_screen_title">Card Collections</string>
+    <string name="collection_card_total_cards">Cards in this collection: %d</string>
+    <string name="collection_card_bottomsheet_title">New Collection</string>
+    <string name="collection_card_bottomsheet_button">Create Collection</string>
+    <string name="collection_card_bottomsheet_input_placeholder">Collection Name</string>
 </resources>

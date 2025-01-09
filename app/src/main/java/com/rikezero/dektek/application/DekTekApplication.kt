@@ -2,9 +2,11 @@ package com.rikezero.dektek.application
 
 import android.app.Application
 import com.rikezero.dektek.di.dekTekNetworkingModules
+import com.rikezero.dektek.di.viewModelModules
 import com.rikezero.mtgapi_kotlin_sdk.di.startMtgApiLibrary
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
+import org.koin.core.context.loadKoinModules
 
 class DekTekApplication : Application() {
 
@@ -13,12 +15,17 @@ class DekTekApplication : Application() {
 
         startKoin {
             androidContext(this@DekTekApplication)
-            modules(
-                listOf(
-                    dekTekNetworkingModules
-                )
-            )
         }
         startMtgApiLibrary()
+        loadAppModules()
+    }
+
+    private fun loadAppModules() {
+        loadKoinModules(
+            listOf(
+                dekTekNetworkingModules,
+                viewModelModules
+            )
+        )
     }
 }
