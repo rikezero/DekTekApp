@@ -2,6 +2,17 @@
 
 All notable changes are listed below.
 
+## 0.8.0 (2025-01-09)
+
+* feat: added viewmodel, di for it, and created basic data structure for listing collections as well as method for searching cards using the API ([f8655e7125e19d32a11147d0c5a53ebf3c28089c](https://github.com/rikezero/DekTekApp/commit/f8655e7125e19d32a11147d0c5a53ebf3c28089c))
+* feat: adds bottomsheet to create new collections, handles keyboard show/hide on dismissal, adds titleheader as well as overload that receives string as title ([39cb4965b920fc7d2740aedea566da50d7ba4a30](https://github.com/rikezero/DekTekApp/commit/39cb4965b920fc7d2740aedea566da50d7ba4a30))
+* feat: creates navhost, configures manifest and continues development of card collection feature ([60b7a1b5dfdfa66f9d79743fb13a0d53b264a59f](https://github.com/rikezero/DekTekApp/commit/60b7a1b5dfdfa66f9d79743fb13a0d53b264a59f))
+* feat: laying out basic logic for creating and managing card collections ([59c29fead8c07ce4e770d74b76d4c32a24fa086e](https://github.com/rikezero/DekTekApp/commit/59c29fead8c07ce4e770d74b76d4c32a24fa086e))
+* feat: started to layout card collection feature ([d004788bb09ef00724d6e707c4fc70e049fc5ce9](https://github.com/rikezero/DekTekApp/commit/d004788bb09ef00724d6e707c4fc70e049fc5ce9))
+* fix: changes InputText default size to better adjust to screens ([723587d29d6835a044d95cb6ab889fedb7ea79ca](https://github.com/rikezero/DekTekApp/commit/723587d29d6835a044d95cb6ab889fedb7ea79ca))
+* chore: begin creating cell for representing a card collection on a list ([3bc3030b4243bdc5def78c8d15aa17aed4d4cb4a](https://github.com/rikezero/DekTekApp/commit/3bc3030b4243bdc5def78c8d15aa17aed4d4cb4a))
+* chore: update mtg lib version ([27be876ab94357e2113b8b988c5716d3dd65e6eb](https://github.com/rikezero/DekTekApp/commit/27be876ab94357e2113b8b988c5716d3dd65e6eb))
+
 ## 0.7.0 (2025-01-08)
 
 * feat: adds an input field with state handling, configured theme, ready for use, aiming to improve reusability ([c44d6897d26b18019ae61b926ed9270342087b45](https://github.com/rikezero/DekTekApp/commit/c44d6897d26b18019ae61b926ed9270342087b45))
