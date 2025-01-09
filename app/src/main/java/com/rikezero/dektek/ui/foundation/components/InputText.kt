@@ -154,45 +154,45 @@ private fun InputTextState.toTextFieldColors(): TextFieldColors =
     TextFieldDefaults.textFieldColors(
         textColor = when (this) {
             DEFAULT -> DekTekTheme.colors.themeAwareTextColor
-            ERROR -> DekTekTheme.colors.error200
+            ERROR -> DekTekTheme.colors.error300
             SUCCESS -> DekTekTheme.colors.success200
             DISABLED -> DekTekTheme.colors.black500
         },
         disabledTextColor = DekTekTheme.colors.black500,
         backgroundColor = when (this) {
             DEFAULT -> DekTekTheme.colors.surface
-            ERROR -> DekTekTheme.colors.error500
+            ERROR -> DekTekTheme.colors.error100
             SUCCESS -> DekTekTheme.colors.success500
             DISABLED -> DekTekTheme.colors.white300
         },
         cursorColor = DekTekTheme.colors.secondary,
-        errorCursorColor = DekTekTheme.colors.secondary,
+        errorCursorColor = DekTekTheme.colors.error200,
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
         leadingIconColor = when (this) {
             DEFAULT -> DekTekTheme.colors.secondary
-            ERROR -> DekTekTheme.colors.error200
+            ERROR -> DekTekTheme.colors.error300
             SUCCESS -> DekTekTheme.colors.success200
             DISABLED -> DekTekTheme.colors.black500
         },
         disabledLeadingIconColor = DekTekTheme.colors.black500,
-        errorLeadingIconColor = DekTekTheme.colors.error200,
+        errorLeadingIconColor = DekTekTheme.colors.error300,
         trailingIconColor = when (this) {
             DEFAULT -> DekTekTheme.colors.secondary
-            ERROR -> DekTekTheme.colors.error200
+            ERROR -> DekTekTheme.colors.error300
             SUCCESS -> DekTekTheme.colors.success200
             DISABLED -> DekTekTheme.colors.black500
         },
         disabledTrailingIconColor = DekTekTheme.colors.black500,
-        errorTrailingIconColor = DekTekTheme.colors.error200,
+        errorTrailingIconColor = DekTekTheme.colors.error300,
         focusedLabelColor = DekTekTheme.colors.white300,
         unfocusedLabelColor = DekTekTheme.colors.black500,
-        errorLabelColor = DekTekTheme.colors.error200,
+        errorLabelColor = DekTekTheme.colors.error300,
         placeholderColor = when (this) {
             DEFAULT -> DekTekTheme.colors.black500
-            ERROR -> DekTekTheme.colors.error200
+            ERROR -> DekTekTheme.colors.error300
             SUCCESS -> DekTekTheme.colors.success200
             DISABLED -> DekTekTheme.colors.black500
         },

@@ -13,13 +13,22 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.rikezero.dektek.R
 import com.rikezero.dektek.domain.model.CardCollectionModel
 import com.rikezero.dektek.ui.foundation.components.collections.CardCollectionCell
+import com.rikezero.dektek.ui.foundation.screen.DefaultCaller
+import com.rikezero.dektek.ui.foundation.screen.LocalScreenState
 import com.rikezero.dektek.ui.foundation.screen.ScreenComposable
+import com.rikezero.dektek.ui.foundation.screen.rememberScreenState
+import com.rikezero.dektek.ui.foundation.topbar.TitleHeader
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -29,13 +38,41 @@ fun CardCollectionsListScreen(
     modifier: Modifier = Modifier
 ) {
     val collections = viewModel.cardCollectionsListState
+    val screenState = rememberScreenState()
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     ScreenComposable(
         modifier = modifier,
+        screenState = screenState,
+        topBar = {
+            TitleHeader(
+                title = stringResource(R.string.collection_card_screen_title)
+            )
+        },
+        sheetContent = {
+            handleSheet<DefaultCaller> {
+                CardCollectionListBottomSheet(
+                    onCreateCollection = { collectionName ->
+                        keyboardController?.hide()
+                        coroutineScope.launch {
+                            screenState.bottomSheetState.modalBottomSheetState.hide()
+                            viewModel.createCollection(collectionName = collectionName)
+                        }
+                    },
+                    sheetState = screenState.bottomSheetState.modalBottomSheetState,
+                    onDismissStateCallback = {
+                        keyboardController?.hide()
+                    }
+                )
+            }
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    //todo create a new collection
+                    coroutineScope.launch {
+                        screenState.bottomSheetState.show()
+                    }
                 }
             ) {
                 Icon(

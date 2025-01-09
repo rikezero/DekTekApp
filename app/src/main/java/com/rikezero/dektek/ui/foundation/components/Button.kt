@@ -164,7 +164,7 @@ private fun BaseButton(
         LocalMinimumInteractiveComponentEnforcement provides false
     ) {
         val buttonContent: @Composable RowScope.() -> Unit = {
-            ProvideTextStyle(value = DekTekTheme.typography.h6.makeItBold()) {
+            ProvideTextStyle(value = DekTekTheme.typography.subtitle2.makeItBold()) {
                 if (loading) CircularProgressIndicator(
                     modifier = Modifier
                         .semantics {
