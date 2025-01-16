@@ -2,6 +2,10 @@
 
 All notable changes are listed below.
 
+## 0.9.0 (2025-01-16)
+
+* feat: adds room database for persistency, unit test for one of the DAOs, the other two will be added on a separate PR ([002e8736f9a47510d99b0f9411c5b5adfebcbc3a](https://github.com/rikezero/DekTekApp/commit/002e8736f9a47510d99b0f9411c5b5adfebcbc3a))
+
 ## 0.8.0 (2025-01-09)
 
 * feat: added viewmodel, di for it, and created basic data structure for listing collections as well as method for searching cards using the API ([f8655e7125e19d32a11147d0c5a53ebf3c28089c](https://github.com/rikezero/DekTekApp/commit/f8655e7125e19d32a11147d0c5a53ebf3c28089c))
