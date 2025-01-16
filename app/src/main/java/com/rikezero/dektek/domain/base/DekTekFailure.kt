@@ -26,5 +26,11 @@ sealed class DekTekFailure(
             val message: String
         )
     }
+
+    class DatabaseFailure(
+        val error: Throwable, // Original Room error/exception
+        message: String? = null,
+        cause: Throwable? = null
+    ) : DekTekFailure(message ?: error.message, cause ?: error)
 }
 

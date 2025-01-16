@@ -5,6 +5,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.rikezero.dektek.R
+import com.rikezero.dektek.domain.model.CardCollectionModel
+import com.rikezero.dektek.room.entity.CardCollectionEntity
+import com.rikezero.dektek.room.entity.CardEntity
+import com.rikezero.mtgapi_kotlin_sdk.domain.model.card.CardModel
 
 /**
  * Extracts all substrings enclosed by curly braces `{}` from the current [String].
@@ -68,4 +72,47 @@ fun TextStyle.makeItBold() = this.copy(
         Font(R.font.montserrat_bold)
     ),
     fontWeight = FontWeight.Bold
+)
+
+fun CardCollectionEntity.toModel(): CardCollectionModel {
+    val entity = this
+    return CardCollectionModel(
+        collectionName = entity.collectionName
+    )
+}
+
+fun CardCollectionModel.toEntity(): CardCollectionEntity {
+    return CardCollectionEntity(
+        collectionName = collectionName
+    )
+}
+
+fun CardEntity.toModel() = CardModel(
+    name = name,
+    manaCost = manaCost,
+    cmc = cmc,
+    colors = colors,
+    colorIdentity = colorIdentity,
+    type = type,
+    types = types,
+    superTypes = superTypes,
+    subTypes = subTypes,
+    rarity = rarity,
+    set = set,
+    setName = setName,
+    text = text,
+    flavor = flavor,
+    artist = artist,
+    number = number,
+    power = power,
+    toughness = toughness,
+    layout = layout,
+    multiverseId = multiverseId,
+    imageUrl = imageUrl,
+    rulings = rulings,
+    foreignNames = foreignNames,
+    printings = printings,
+    originalText = originalText,
+    originalType = originalType,
+    id = id
 )

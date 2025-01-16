@@ -1,4 +1,4 @@
-package com.rikezero.dektek.ui.collections
+package com.rikezero.dektek.ui.collections.collectionslist
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

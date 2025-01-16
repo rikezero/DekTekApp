@@ -1,5 +1,7 @@
 package com.rikezero.dektek.domain.usecase
 
+import com.rikezero.dektek.domain.model.DekTekResult
+
 /**
  * A base UseCase that encapsulates a unit of business logic.
  *
@@ -18,7 +20,7 @@ abstract class UseCase<in P, out R> {
      *
      * It's marked `suspend` to support asynchronous operations, which is common in use cases.
      */
-    suspend operator fun invoke(params: P): R {
+    suspend operator fun invoke(params: P): DekTekResult<R> {
         return execute(params)
     }
 
@@ -28,5 +30,5 @@ abstract class UseCase<in P, out R> {
      * @param params Parameters for executing the use case.
      * @return The business logic result.
      */
-    protected abstract suspend fun execute(params: P): R
+    protected abstract suspend fun execute(params: P): DekTekResult<R>
 }
