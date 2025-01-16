@@ -1,16 +1,7 @@
 package com.rikezero.dektek.mapper
 
 import com.rikezero.dektek.domain.base.DekTekFailure
-import com.rikezero.dektek.domain.model.DekTeKResult
-import com.rikezero.dektek.networking.response.DekTeKResponse
 import com.rikezero.mtgapi_kotlin_sdk.domain.failure.MtgApiFailure
-
-fun <T : Any> DekTeKResponse<T>.toResult(): DekTeKResult<T> {
-    return when (this) {
-        is DekTeKResponse.Success -> DekTeKResult.Success(data)
-        is DekTeKResponse.Error -> DekTeKResult.Error(exception)
-    }
-}
 
 fun MtgApiFailure.toDekTekFailure(): DekTekFailure {
     return when (this) {
@@ -31,8 +22,6 @@ fun MtgApiFailure.toDekTekFailure(): DekTekFailure {
 
 fun DekTekFailure.toMtgApiFailure(): MtgApiFailure {
     return when (this) {
-        is DekTekFailure.UnknownFailure ->
-            MtgApiFailure.UnknownFailure(this.cause ?: Throwable(), this.message)
         is DekTekFailure.NetworkingFailure ->
             MtgApiFailure.NetworkingFailure(
                 error = MtgApiFailure.NetworkingFailure.Error(
@@ -43,5 +32,8 @@ fun DekTekFailure.toMtgApiFailure(): MtgApiFailure {
                 message = this.message,
                 cause = this.cause
             )
+        is DekTekFailure.UnknownFailure ->
+            MtgApiFailure.UnknownFailure(this.cause ?: Throwable(), this.message)
+        else -> MtgApiFailure.UnknownFailure(this.cause ?: Throwable(), this.message)
     }
 }

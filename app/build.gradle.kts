@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.ksp)
     id("kotlin-parcelize")
 }
 
@@ -91,12 +92,18 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
+    testImplementation(libs.koin.test)
 
     // Retrofit2 and OkHttp3 dependencies
     implementation(libs.retrofit2)
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.logging.interceptor)
+
+    // Android Room
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
 
     // Core Android
     implementation(libs.androidx.core.ktx)
@@ -110,8 +117,30 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.room.testing)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.core.ktx)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.room.testing)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.core.ktx)
     debugImplementation(libs.compose.ui.test.manifest)
     implementation(libs.kotlin.reflect)
+    implementation(libs.ksp)
+
+    // Mockk
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk)
+}
+
+tasks.withType<Test> {
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED", // Required for ByteBuddy
+        "-Dnet.bytebuddy.experimental=true"           // Enable experimental Java 17 support
+    )
 }
 
 tasks.named("preBuild") {

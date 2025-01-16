@@ -1,7 +1,6 @@
-package com.rikezero.dektek.ui.collections
+package com.rikezero.dektek.ui.collections.collectionslist
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
@@ -14,17 +13,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.rikezero.dektek.R
 import com.rikezero.dektek.domain.model.CardCollectionModel
 import com.rikezero.dektek.ui.foundation.components.collections.CardCollectionCell
 import com.rikezero.dektek.ui.foundation.screen.DefaultCaller
-import com.rikezero.dektek.ui.foundation.screen.LocalScreenState
+import com.rikezero.dektek.ui.foundation.screen.OnLifecycleEvent
 import com.rikezero.dektek.ui.foundation.screen.ScreenComposable
 import com.rikezero.dektek.ui.foundation.screen.rememberScreenState
 import com.rikezero.dektek.ui.foundation.topbar.TitleHeader
@@ -41,6 +40,10 @@ fun CardCollectionsListScreen(
     val screenState = rememberScreenState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    OnLifecycleEvent(Lifecycle.Event.ON_CREATE) {
+        viewModel.getCardCollectionsFromDatabase()
+    }
 
     ScreenComposable(
         modifier = modifier,

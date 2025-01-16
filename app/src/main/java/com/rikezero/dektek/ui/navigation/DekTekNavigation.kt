@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.rikezero.dektek.ui.collections.CardCollectionsListScreen
+import com.rikezero.dektek.ui.collections.collectionslist.CardCollectionsListScreen
 import com.rikezero.dektek.ui.navigation.DekTekDestinations.COLLECTIONS_LIST
 
 @Composable
